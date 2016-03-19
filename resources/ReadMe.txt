@@ -16,9 +16,8 @@ Downloads:
 	2. commons-pool2-2.4.2.jar
 	3. commons-logging-1.2.jar
 	
-Tomcat Redis Cluster Enabled Session Manager jar is available in below location
-https://github.com/ran-jit/TomcatRedisClusterEnabledSessionManager/releases/download/1.0/TomcatClusterEnabledRedisSessionManager-1.0.zip
-
+Tomcat Redis Cluster Enabled Session Manager jar is available in below location:
+https://github.com/ran-jit/TomcatClusterRedisSessionManager/wiki
 
 Steps to be done,
 1. Move the downloaded jars to tomcat/lib directory
