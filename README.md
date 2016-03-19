@@ -32,7 +32,7 @@ Note: Artifacts are uploaded in downloads section version wise.
 2. Add tomcat system property "catalina.base"
 	* **catalina.base="TOMCAT_LOCATION"**
 
-3. Download and configure Redis credentials in RedisDataCache.properties file and move the file to tomcat/conf directory
+3. Configure downloaded Redis credentials in RedisDataCache.properties file and move the file to tomcat/conf directory
 	* **tomcat/conf/RedisDataCache.properties**
 
 4. Add the below two lines in tomcat/conf/context.xml
