@@ -133,8 +133,8 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 		} catch (Exception e) {
 			log.error("Error while initializing serializer/rediscache", e);
 		}
-		log.info("The sessions will expire after " + getMaxInactiveInterval() + " seconds");
-		setDistributable(true);
+		log.info("The sessions will expire after " + (getContext().getSessionTimeout() * 60) + " seconds");
+		getContext().setDistributable(true);
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 			customSession.setNew(true);
 			customSession.setValid(true);
 			customSession.setCreationTime(System.currentTimeMillis());
-			customSession.setMaxInactiveInterval(getMaxInactiveInterval());
+			customSession.setMaxInactiveInterval((getContext().getSessionTimeout() * 60));
 			customSession.setId(sessionId);
 			customSession.tellNew();
 		}
@@ -262,7 +262,7 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 			serializer.deserializeSessionData(data, customSession, metadata);
 			customSession.setId(id);
 			customSession.setNew(false);
-			customSession.setMaxInactiveInterval(getMaxInactiveInterval());
+			customSession.setMaxInactiveInterval((getContext().getSessionTimeout() * 60));
 			customSession.access();
 			customSession.setValid(true);
 			customSession.resetDirtyTracking();
@@ -296,8 +296,8 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 				currentSessionSerializationMetadata.set(updatedSerializationMetadata);
 				currentSessionIsPersisted.set(true);
 			}
-			log.trace("Setting expire timeout on session [" + customSession.getId() + "] to " + getMaxInactiveInterval());
-			requestSessionCacheUtils.expire(customSession.getId(), getMaxInactiveInterval());
+			log.trace("Setting expire timeout on session [" + customSession.getId() + "] to " + (getContext().getSessionTimeout() * 60));
+			requestSessionCacheUtils.expire(customSession.getId(), (getContext().getSessionTimeout() * 60));
 		} catch (IOException e) {
 			log.error("Error occured while storing the session object into redis", e);
 		}
@@ -333,8 +333,8 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 	private void initializeSessionSerializer() throws Exception {
 		serializer = new SessionDataSerializer();
 		Loader loader = null;
-		if (getContainer() != null) {
-			loader = getContainer().getLoader();
+		if (getContext() != null) {
+			loader = getContext().getLoader();
 		}
 		ClassLoader classLoader = null;
 		if (loader != null) {
