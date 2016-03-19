@@ -8,7 +8,7 @@
  */
 
 Supports:
-   * Apache Tomcat 7
+   * Apache Tomcat 8
 
 Downloads:
 	Pre-requisite:
