@@ -11,14 +11,13 @@ Supports:
    * Apache Tomcat 7
 
 Downloads:
-
 	Pre-requisite:
 	1. jedis-2.8.0.jar
 	2. commons-pool2-2.4.2.jar
 	3. commons-logging-1.2.jar
 	
-	Tomcat Redis Cluster Enabled Session Manager jar is available in below location	  
-	    https://github.com/ran-jit/TomcatRedisClusterEnabledSessionManager/releases/download/1.0/TomcatClusterEnabledRedisSessionManager-1.0.zip
+Tomcat Redis Cluster Enabled Session Manager jar is available in below location
+https://github.com/ran-jit/TomcatRedisClusterEnabledSessionManager/releases/download/1.0/TomcatClusterEnabledRedisSessionManager-1.0.zip
 
 
 Steps to be done,
