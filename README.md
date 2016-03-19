@@ -9,7 +9,8 @@ It supports, both single redis master and redis cluster based on the RedisDataCa
 Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer.
 
 ## Supports:
-   * Apache Tomcat 7
+   * [Apache Tomcat 7](https://github.com/ran-jit/TomcatClusterRedisSessionManager/releases/tag/1.0)
+   * Apache Tomcat 8
 
 ## Downloads:
 
