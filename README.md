@@ -14,9 +14,9 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
 ## Downloads:
 
 ##### Pre-requisite:
-1. jedis-2.8.0.jar
-2. commons-pool2-2.4.2.jar
-3. commons-logging-1.2.jar
+1. jedis.jar
+2. commons-pool2.jar
+3. commons-logging.jar
 
 **Tomcat Redis Cluster Enabled Session Manager jar is available in below location**
   
