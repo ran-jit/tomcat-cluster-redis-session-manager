@@ -18,11 +18,10 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
 2. commons-pool2.jar
 3. commons-logging.jar
 
-**Tomcat Redis Cluster Enabled Session Manager jar is available in below location**
+**Tomcat Redis Cluster Enabled Session Manager is available in below location**
   
     https://github.com/ran-jit/TomcatClusterRedisSessionManager/wiki
     
-Note: Artifacts are uploaded in downloads section version wise.
 
 
 ####Steps to be done,
