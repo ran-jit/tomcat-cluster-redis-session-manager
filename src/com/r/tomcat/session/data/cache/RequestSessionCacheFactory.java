@@ -50,6 +50,7 @@ public class RequestSessionCacheFactory
 					resourceStream = null;
 					properties = new Properties();
 					File file = new File(System.getProperty("catalina.base").concat(File.separator).concat("conf").concat(File.separator).concat(RedisConstants.REDIS_DATA_CACHE_PROPERTIES_FILE));
+					log.info("redis properties:"+file.getPath().toString());
 					if (file.exists()) {
 						resourceStream = new FileInputStream(file);
 					}
