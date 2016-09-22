@@ -301,7 +301,7 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 			//time uite seconds
 			int timeOut=session.getMaxInactiveInterval();
 			if(timeOut<1){
-				timeOut=-1;
+				timeOut=1800;
 			}
 //			log.trace("Setting expire timeout on session [" + customSession.getId() + "] to " + (getContext().getSessionTimeout() * 60));
 //			requestSessionCacheUtils.expire(customSession.getId(), (getContext().getSessionTimeout() * 60));
