@@ -23,6 +23,7 @@ public class RedisConstants
 	public static final String TIME_BETWEENEVICTION = "redis.time.betweenEviction";
 	public static final String HOSTS = "redis.hosts";
 	public static final String PASSWORD = "redis.password";
+	public static final String DATABASE = "redis.db";
 	public static final String IS_CLUSTER_ENABLED = "redis.cluster.enabled";
 	
 	// Redis property default values
