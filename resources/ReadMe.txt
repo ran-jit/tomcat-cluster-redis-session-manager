@@ -40,3 +40,8 @@ Steps to be done,
 
 Note:
   * The Redis session manager supports, both single redis master and redis cluster based on the redis.properties configuration.
+
+modify explain:
+  * add redis select database
+  * repair redis session time unit bug,timeout=session.getMaxInactiveInterval(),unit =seconds
+
