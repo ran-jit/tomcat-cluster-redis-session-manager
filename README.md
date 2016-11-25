@@ -21,7 +21,7 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
 
 **Tomcat Redis Cluster Enabled Session Manager is available in below location**
   
-    https://github.com/ran-jit/TomcatClusterRedisSessionManager/wiki/Tomcat-Cluster-Redis-Session-Manager
+    https://github.com/ran-jit/TomcatClusterRedisSessionManager/wiki
     
 
 
