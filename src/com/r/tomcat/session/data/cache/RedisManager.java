@@ -57,6 +57,7 @@ public class RedisManager
 		poolConfig.setNumTestsPerEvictionRun(testNumPerEviction);
 		long timeBetweenEviction = Long.parseLong(properties.getProperty(RedisConstants.TIME_BETWEENEVICTION, RedisConstants.DEFAULT_TIME_BETWEENEVICTION_VALUE));
 		poolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEviction);
+		int database = Integer.parseInt(properties.getProperty(RedisConstants.DATABASE, "0"));
 		String hosts = properties.getProperty(RedisConstants.HOSTS, Protocol.DEFAULT_HOST.concat(":").concat(String.valueOf(Protocol.DEFAULT_PORT)));
 		String host = null;
 		int port = 0;
@@ -74,8 +75,10 @@ public class RedisManager
 		if (password == null || password == "" || password.isEmpty()) {
 			pool = new JedisPool(poolConfig, host, port);
 		} else {
-			pool = new JedisPool(poolConfig, host, port, Protocol.DEFAULT_TIMEOUT, password);
+//			pool = new JedisPool(poolConfig, host, port, Protocol.DEFAULT_TIMEOUT, password);
+			pool =new JedisPool(poolConfig, host, port, Protocol.DEFAULT_TIMEOUT, password,database);
 		}
+
 	}
 
 	public Jedis getJedis() {
