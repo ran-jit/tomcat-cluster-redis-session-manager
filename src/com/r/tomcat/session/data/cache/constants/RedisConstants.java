@@ -24,7 +24,9 @@ public class RedisConstants
 	public static final String HOSTS = "redis.hosts";
 	public static final String PASSWORD = "redis.password";
 	public static final String IS_CLUSTER_ENABLED = "redis.cluster.enabled";
-	
+	public static final String DATABASE = "redis.database";
+	public static final String TIMEOUT = "redis.timeout";
+
 	// Redis property default values
 	public static final String DEFAULT_MAX_ACTIVE_VALUE = "10";
 	public static final String DEFAULT_TEST_ONBORROW_VALUE = "true";

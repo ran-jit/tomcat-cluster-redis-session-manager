@@ -229,7 +229,7 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 
 	@Override
 	public void remove(Session session, boolean update) {
-		requestSessionCacheUtils.deleteKey(session.getId());
+		requestSessionCacheUtils.expire(session.getId(), 10);
 	}
 
 	@Override
@@ -296,8 +296,11 @@ public class RequestSessionManager extends ManagerBase implements Lifecycle
 				currentSessionSerializationMetadata.set(updatedSerializationMetadata);
 				currentSessionIsPersisted.set(true);
 			}
-			log.trace("Setting expire timeout on session [" + customSession.getId() + "] to " + (getContext().getSessionTimeout() * 60));
-			requestSessionCacheUtils.expire(customSession.getId(), (getContext().getSessionTimeout() * 60));
+			
+			int timeout = getContext().getSessionTimeout() * 60;
+			timeout = timeout < 1800 ? 1800 : timeout;
+			log.trace("Setting expire timeout on session [" + customSession.getId() + "] to " + timeout);
+			requestSessionCacheUtils.expire(customSession.getId(), timeout);
 		} catch (IOException e) {
 			log.error("Error occured while storing the session object into redis", e);
 		}

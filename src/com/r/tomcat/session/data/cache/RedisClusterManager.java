@@ -59,7 +59,8 @@ public class RedisClusterManager
 		poolConfig.setNumTestsPerEvictionRun(testNumPerEviction);
 		long timeBetweenEviction = Long.parseLong(properties.getProperty(RedisConstants.TIME_BETWEENEVICTION, RedisConstants.DEFAULT_TIME_BETWEENEVICTION_VALUE));
 		poolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEviction);
-		jedisCluster = new JedisCluster(getJedisClusterNodesSet(properties.getProperty(RedisConstants.HOSTS, Protocol.DEFAULT_HOST.concat(":").concat(String.valueOf(Protocol.DEFAULT_PORT)))), poolConfig);
+		int timeout = Integer.parseInt(properties.getProperty(RedisConstants.TIMEOUT, String.valueOf(Protocol.DEFAULT_TIMEOUT)));
+		jedisCluster = new JedisCluster(getJedisClusterNodesSet(properties.getProperty(RedisConstants.HOSTS, Protocol.DEFAULT_HOST.concat(":").concat(String.valueOf(Protocol.DEFAULT_PORT)))), (timeout < Protocol.DEFAULT_TIMEOUT ? Protocol.DEFAULT_TIMEOUT : timeout), poolConfig);
 	}
 
 	/**

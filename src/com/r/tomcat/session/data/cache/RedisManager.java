@@ -71,11 +71,9 @@ public class RedisManager
 			}
 		}
 		String password = properties.getProperty(RedisConstants.PASSWORD);
-		if (password == null || password == "" || password.isEmpty()) {
-			pool = new JedisPool(poolConfig, host, port);
-		} else {
-			pool = new JedisPool(poolConfig, host, port, Protocol.DEFAULT_TIMEOUT, password);
-		}
+		int database = Integer.parseInt(properties.getProperty(RedisConstants.DATABASE, String.valueOf(Protocol.DEFAULT_DATABASE)));
+		int timeout = Integer.parseInt(properties.getProperty(RedisConstants.TIMEOUT, String.valueOf(Protocol.DEFAULT_TIMEOUT)));
+		pool = new JedisPool(poolConfig, host, port, (timeout < Protocol.DEFAULT_TIMEOUT ? Protocol.DEFAULT_TIMEOUT : timeout), ((password == null || password == "" || password.isEmpty()) ? null : password), database);
 	}
 
 	public Jedis getJedis() {
