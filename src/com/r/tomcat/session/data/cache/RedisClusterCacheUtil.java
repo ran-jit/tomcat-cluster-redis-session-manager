@@ -54,6 +54,9 @@ public class RedisClusterCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisClusterMaxRedirectionsException | JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 				waitforFailover();
 			}
 		} while (!sucess && tries <= numRetries);
@@ -73,6 +76,9 @@ public class RedisClusterCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisClusterMaxRedirectionsException | JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 				waitforFailover();
 			}
 		} while (!sucess && tries <= numRetries);
@@ -90,6 +96,9 @@ public class RedisClusterCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisClusterMaxRedirectionsException | JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 				waitforFailover();
 			}
 		} while (!sucess && tries <= numRetries);
@@ -109,6 +118,9 @@ public class RedisClusterCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisClusterMaxRedirectionsException | JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 				waitforFailover();
 			}
 		} while (!sucess && tries <= numRetries);
@@ -128,6 +140,9 @@ public class RedisClusterCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisClusterMaxRedirectionsException | JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 				waitforFailover();
 			}
 		} while (!sucess && tries <= numRetries);

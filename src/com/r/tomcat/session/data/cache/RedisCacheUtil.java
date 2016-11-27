@@ -56,6 +56,9 @@ public class RedisCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 			}
 		} while (!sucess && tries <= numRetries);
 	}
@@ -76,6 +79,9 @@ public class RedisCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 			}
 		} while (!sucess && tries <= numRetries);
 		return retVal;
@@ -94,6 +100,9 @@ public class RedisCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 			}
 		} while (!sucess && tries <= numRetries);
 	}
@@ -114,6 +123,9 @@ public class RedisCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 			}
 		} while (!sucess && tries <= numRetries);
 		return array;
@@ -134,6 +146,9 @@ public class RedisCacheUtil implements IRequestSessionCacheUtils
 				sucess = true;
 			} catch (JedisConnectionException e) {
 				log.error("Jedis connection failed, retrying..." + tries);
+				if (tries == numRetries) {
+					throw e;
+				}
 			}
 		} while (!sucess && tries <= numRetries);
 	}
