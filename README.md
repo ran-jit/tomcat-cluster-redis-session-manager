@@ -25,7 +25,7 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
     
 
 
-####Steps to be done,
+#### Steps to be done,
 1. Move the downloaded jars to tomcat/lib directory
 	* **$catalina.home/lib/**
 	
@@ -44,5 +44,5 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
 	* 	**&#60;session-timeout&#62;60&#60;&#47;session-timeout&#62;**
 	* **&#60;&#47;session-config&#62;**
 
-###Note:
+### Note:
   * The Redis session manager supports, both single redis master and redis cluster based on the redis.properties configuration.
