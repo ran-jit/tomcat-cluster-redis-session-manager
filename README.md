@@ -1,4 +1,4 @@
-# Tomcat-Redis-Cluster-Enabled-Session-Manager
+# Tomcat Clustering Redis Session Manager
 
 Redis session manager is pluggable one. It uses to store sessions into Redis for easy distribution of HTTP Requests across a cluster of Tomcat servers. Sessions are implemented as as non-sticky i.e, each request is forwarded to any server in round-robin manner.
 
