@@ -45,4 +45,4 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
 	* **&#60;&#47;session-config&#62;**
 
 ### Note:
-  * The Redis session manager supports, both single redis master and redis cluster based on the redis.properties configuration.
+  * Supports, single and multi-node redis cluster based on the RedisDataCache.properties configuration.
