@@ -12,14 +12,13 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
    * Apache Tomcat 7
    * Apache Tomcat 8
 
-## Pre-requisite:
+#### Pre-requisite:
 1. jedis.jar
 2. commons-pool2.jar
 3. commons-logging.jar
 
 more details.. https://github.com/ran-jit/TomcatClusterRedisSessionManager/wiki
     
-
 
 #### Steps to be done,
 1. Move the downloaded jars to tomcat/lib directory
