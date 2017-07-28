@@ -11,6 +11,11 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer
 ## Supports:
    * Apache Tomcat 7
    * Apache Tomcat 8
+   * Apache Tomcat 9 (working on it..)
+
+## Downloads:
+   * [latest version (2.0)](https://github.com/ran-jit/tomcat-cluster-redis-session-manager/releases/tag/2.0)
+   * [older versions](https://github.com/ran-jit/tomcat-cluster-redis-session-manager/wiki)
 
 #### Pre-requisite:
 1. jedis.jar
