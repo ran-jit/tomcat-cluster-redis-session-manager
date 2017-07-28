@@ -20,7 +20,7 @@ more details.. https://github.com/ran-jit/TomcatClusterRedisSessionManager/wiki
 
 Steps to be done,
 	1. Move the downloaded jars to tomcat/lib directory
-		* $catalina.home/lib/
+		* tomcat/lib/
 
 	2. Add tomcat system property "catalina.base"
 		* catalina.base="TOMCAT_LOCATION"
