@@ -16,7 +16,7 @@ Pre-requisite:
 	2. commons-pool2.jar
 	3. commons-logging.jar
 
-more details.. https://github.com/ran-jit/TomcatClusterRedisSessionManager/wiki
+more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/wiki
 
 Steps to be done,
 	1. Move the downloaded jars to tomcat/lib directory

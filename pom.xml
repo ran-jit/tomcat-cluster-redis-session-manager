@@ -34,7 +34,7 @@
 		</dependency>
 
 		<!-- For local development -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>apache-tomcat</groupId>
 			<artifactId>catalina</artifactId>
 			<version>apache-tomcat-8.5.16</version>
@@ -48,7 +48,7 @@
 			<groupId>apache-tomcat</groupId>
 			<artifactId>tomcat-api</artifactId>
 			<version>apache-tomcat-8.5.16</version>
-		</dependency>
+		</dependency> -->
 		<!-- For local development end.. -->
 	</dependencies>
 
