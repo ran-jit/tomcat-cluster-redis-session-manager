@@ -1,4 +1,4 @@
-package com.r.tomcat.session.management;
+package tomcat.request.session;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,68 +10,79 @@ import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.catalina.util.CustomObjectInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Tomcat clustering implementation
+ * Tomcat clustering with Redis data-cache implementation.
  * 
- * This class is uses to store and retrieve the HTTP request session objects from catalina to data cache
+ * Session serialization utility.
  *
  * @author Ranjith Manickam
- * @since 1.0
+ * @since 2.0
  */
-public class SessionDataSerializer
-{
-	private final Log log = LogFactory.getLog(SessionDataSerializer.class);
+public class SerializationUtil {
 
 	private ClassLoader loader;
 
+	private Log log = LogFactory.getLog(SerializationUtil.class);
+
+	/**
+	 * To set class loader
+	 * 
+	 * @param loader
+	 */
 	public void setClassLoader(ClassLoader loader) {
 		this.loader = loader;
 	}
 
 	/**
-	 * method to get session attributes hash code
+	 * To get session attributes hash code
 	 * 
 	 * @param session
 	 * @return
 	 * @throws IOException
 	 */
-	public byte[] getSessionAttributesHashCode(CustomRequestSession session) throws IOException {
+	public byte[] getSessionAttributesHashCode(Session session) throws IOException {
 		byte[] serialized = null;
-		HashMap<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<String, Object>();
+
 		for (Enumeration<String> enumerator = session.getAttributeNames(); enumerator.hasMoreElements();) {
 			String key = enumerator.nextElement();
 			attributes.put(key, session.getAttribute(key));
 		}
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(bos));) {
+
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(bos));) {
 			oos.writeUnshared(attributes);
 			oos.flush();
 			serialized = bos.toByteArray();
 		}
+
 		MessageDigest digester = null;
 		try {
 			digester = MessageDigest.getInstance("MD5");
-		} catch (Exception e) {
-			log.error("Unable to get MessageDigest instance for MD5");
+		} catch (Exception ex) {
+			log.error("Unable to get MessageDigest instance for MD5", ex);
 		}
 		return digester.digest(serialized);
 	}
 
 	/**
-	 * method to serialize custom session data
+	 * To serialize session object
 	 * 
 	 * @param session
 	 * @param metadata
 	 * @return
 	 * @throws IOException
 	 */
-	public byte[] serializeSessionData(CustomRequestSession session, SessionSerializationMetadata metadata) throws IOException {
+	public byte[] serializeSessionData(Session session, SessionMetadata metadata) throws IOException {
 		byte[] serialized = null;
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(bos));) {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(bos));) {
 			oos.writeObject(metadata);
 			session.writeObjectData(oos);
 			oos.flush();
@@ -81,7 +92,7 @@ public class SessionDataSerializer
 	}
 
 	/**
-	 * method to deserialize custom session data
+	 * To de-serialize session object
 	 * 
 	 * @param data
 	 * @param session
@@ -89,9 +100,11 @@ public class SessionDataSerializer
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public void deserializeSessionData(byte[] data, CustomRequestSession session, SessionSerializationMetadata metadata) throws IOException, ClassNotFoundException {
-		try (BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(data)); ObjectInputStream ois = new CustomObjectInputStream(bis, loader);) {
-			SessionSerializationMetadata serializedMetadata = (SessionSerializationMetadata) ois.readObject();
+	public void deserializeSessionData(byte[] data, Session session, SessionMetadata metadata)
+			throws IOException, ClassNotFoundException {
+		try (BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(data));
+				ObjectInputStream ois = new CustomObjectInputStream(bis, this.loader);) {
+			SessionMetadata serializedMetadata = (SessionMetadata) ois.readObject();
 			metadata.copyFieldsFrom(serializedMetadata);
 			session.readObjectData(ois);
 		}
