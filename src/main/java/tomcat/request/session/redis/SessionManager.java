@@ -204,8 +204,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	@Override
 	public Session findSession(String sessionId) throws IOException {
 		Session session = null;
-		if (sessionId != null && this.sessionContext.get() != null
-				&& sessionId.equals(this.sessionContext.get().getId())) {
+		if (sessionId != null && this.sessionContext.get() != null && sessionId.equals(this.sessionContext.get().getId())) {
 			session = this.sessionContext.get().getSession();
 		} else {
 			byte[] data = this.dataCache.get(sessionId);
@@ -296,13 +295,11 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 			Boolean isPersisted;
 			Session newSession = (Session) session;
 			byte[] hash = (this.sessionContext.get() != null && this.sessionContext.get().getMetadata() != null)
-					? this.sessionContext.get().getMetadata().getAttributesHash()
-					: null;
+					? this.sessionContext.get().getMetadata().getAttributesHash() : null;
 			byte[] currentHash = serializer.getSessionAttributesHashCode(newSession);
 
 			if (forceSave || newSession.isDirty()
-					|| (isPersisted = (this.sessionContext.get() != null) ? this.sessionContext.get().isPersisted()
-							: null) == null
+					|| (isPersisted = (this.sessionContext.get() != null) ? this.sessionContext.get().isPersisted() : null) == null
 					|| !isPersisted || !Arrays.equals(hash, currentHash)) {
 
 				SessionMetadata metadata = new SessionMetadata();
