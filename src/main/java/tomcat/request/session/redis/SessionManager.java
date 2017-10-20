@@ -1,10 +1,12 @@
 package tomcat.request.session.redis;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
@@ -126,7 +128,8 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 		super.setState(LifecycleState.STARTING);
 
 		boolean initializedValve = false;
-		for (Valve valve : getContext().getPipeline().getValves()) {
+		Context context = getContextIns();
+		for (Valve valve : context.getPipeline().getValves()) {
 			if (valve instanceof SessionHandlerValve) {
 				this.handlerValve = (SessionHandlerValve) valve;
 				this.handlerValve.setSessionManager(this);
@@ -141,7 +144,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 		initialize();
 
 		log.info("The sessions will expire after " + (getSessionTimeout()) + " seconds.");
-		getContext().setDistributable(true);
+		context.setDistributable(true);
 	}
 
 	/** {@inheritDoc} */
@@ -273,9 +276,8 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 			this.dataCache = new RedisDataCache();
 
 			this.serializer = new SerializationUtil();
-			ClassLoader loader = (getContext() != null && getContext().getLoader() != null)
-					? getContext().getLoader().getClassLoader()
-					: null;
+			Context context = getContextIns();
+			ClassLoader loader = (context != null && context.getLoader() != null) ? context.getLoader().getClassLoader() : null;
 			this.serializer.setClassLoader(loader);
 		} catch (Exception ex) {
 			log.error("Error occured while initializing the session manager..", ex);
@@ -348,7 +350,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	 * @return
 	 */
 	private int getSessionTimeout() {
-		int timeout = getContext().getSessionTimeout() * 60;
+		int timeout = getContextIns().getSessionTimeout() * 60;
 		return (timeout < 1800) ? 1800 : timeout;
 	}
 
@@ -385,5 +387,23 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	private void setValues(String sessionId, Session session, boolean isPersisted, SessionMetadata metadata) {
 		setValues(sessionId, session);
 		setValues(isPersisted, metadata);
+	}
+
+	/**
+	 * @return
+	 */
+	private Context getContextIns() {
+		try {
+			Method method = this.getClass().getSuperclass().getDeclaredMethod("getContext");
+			return (Context) method.invoke(this);
+		} catch (Exception ex) {
+			try {
+				Method method = this.getClass().getSuperclass().getDeclaredMethod("getContainer");
+				return (Context) method.invoke(this);
+			} catch (Exception ex2) {
+				log.error("Error in getContext", ex2);
+			}
+		}
+		return null;
 	}
 }

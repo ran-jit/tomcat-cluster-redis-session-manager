@@ -130,4 +130,10 @@ public class Session extends StandardSession {
 		super.readObjectData(in);
 		this.setCreationTime(in.readLong());
 	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void invalidate() {
+		super.invalidate();
+	}
 }
