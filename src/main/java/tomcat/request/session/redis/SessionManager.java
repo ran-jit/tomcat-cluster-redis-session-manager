@@ -143,7 +143,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 
 		initialize();
 
-		log.info("The sessions will expire after " + (getSessionTimeout()) + " seconds.");
+		log.info("The sessions will expire after " + (getSessionTimeout(null)) + " seconds.");
 		context.setDistributable(true);
 	}
 
@@ -171,7 +171,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 			session.setNew(true);
 			session.setValid(true);
 			session.setCreationTime(System.currentTimeMillis());
-			session.setMaxInactiveInterval(getSessionTimeout());
+			session.setMaxInactiveInterval(getSessionTimeout(session));
 			session.tellNew();
 		}
 		setValues(sessionId, session, false, new SessionMetadata());
@@ -230,7 +230,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 					newSession.setNew(false);
 					newSession.setValid(true);
 					newSession.resetDirtyTracking();
-					newSession.setMaxInactiveInterval(getSessionTimeout());
+					newSession.setMaxInactiveInterval(getSessionTimeout(newSession));
 
 					session = newSession;
 					isPersisted = true;
@@ -310,7 +310,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 				setValues(true, metadata);
 			}
 
-			int timeout = getSessionTimeout();
+			int timeout = getSessionTimeout(newSession);
 			this.dataCache.expire(newSession.getId(), timeout);
 			log.trace("Session [" + newSession.getId() + "] expire in [" + timeout + "] seconds.");
 
@@ -346,9 +346,10 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	/**
 	 * @return
 	 */
-	private int getSessionTimeout() {
+	private int getSessionTimeout(Session session) {
 		int timeout = getContextIns().getSessionTimeout() * 60;
-		return (timeout < 1800) ? 1800 : timeout;
+		int sessionTimeout = (session == null) ? 0 : session.getMaxInactiveInterval() * 60;
+		return (sessionTimeout < timeout) ? ((timeout < 1800) ? 1800 : timeout) : sessionTimeout;
 	}
 
 	/**
