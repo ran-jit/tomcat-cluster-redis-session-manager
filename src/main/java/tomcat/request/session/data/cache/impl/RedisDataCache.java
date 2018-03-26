@@ -111,7 +111,7 @@ public class RedisDataCache implements DataCache {
 		timeout = (timeout < Protocol.DEFAULT_TIMEOUT) ? Protocol.DEFAULT_TIMEOUT : timeout;
 
 		if (clusterEnabled) {
-			dataCache = new RedisClusterCacheUtil((Set<HostAndPort>) nodes, timeout, getPoolConfig(properties));
+			dataCache = new RedisClusterCacheUtil((Set<HostAndPort>) nodes, password, timeout, getPoolConfig(properties));
 		} else {
 			dataCache = new RedisCacheUtil(((List<String>) nodes).get(0),
 					Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout, getPoolConfig(properties));
@@ -228,7 +228,7 @@ public class RedisDataCache implements DataCache {
 
 		private JedisPool pool;
 
-		private final int numRetries = 3;
+		private static final int NUM_RETRIES = 3;
 
 		private Log log = LogFactory.getLog(RedisCacheUtil.class);
 
@@ -252,10 +252,10 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries)
+					if (tries == NUM_RETRIES)
 						throw ex;
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return (retVal != null) ? retVal.getBytes() : null;
 		}
 
@@ -274,10 +274,10 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries)
+					if (tries == NUM_RETRIES)
 						throw ex;
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 
@@ -296,10 +296,10 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries)
+					if (tries == NUM_RETRIES)
 						throw ex;
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 
@@ -318,10 +318,10 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries)
+					if (tries == NUM_RETRIES)
 						throw ex;
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 
@@ -340,10 +340,10 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries)
+					if (tries == NUM_RETRIES)
 						throw ex;
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 	}
@@ -360,12 +360,13 @@ public class RedisDataCache implements DataCache {
 
 		private JedisCluster cluster;
 
-		private final int numRetries = 30;
+		private static final int NUM_RETRIES = 30;
+		private static final int DEFAULT_MAX_REDIRECTIONS = 5;
 
 		private Log log = LogFactory.getLog(RedisClusterCacheUtil.class);
 
-		public RedisClusterCacheUtil(Set<HostAndPort> nodes, int timeout, JedisPoolConfig poolConfig) {
-			cluster = new JedisCluster(nodes, timeout, poolConfig);
+		public RedisClusterCacheUtil(Set<HostAndPort> nodes, String password, int timeout, JedisPoolConfig poolConfig) {
+			cluster = new JedisCluster(nodes, timeout, Protocol.DEFAULT_TIMEOUT, DEFAULT_MAX_REDIRECTIONS, password, poolConfig);
 		}
 
 		/** {@inheritDoc} */
@@ -381,12 +382,12 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries) {
+					if (tries == NUM_RETRIES) {
 						throw ex;
 					}
 					waitforFailover();
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return (retVal != null) ? retVal.getBytes() : null;
 		}
 
@@ -403,12 +404,12 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries) {
+					if (tries == NUM_RETRIES) {
 						throw ex;
 					}
 					waitforFailover();
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 
@@ -425,12 +426,12 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries) {
+					if (tries == NUM_RETRIES) {
 						throw ex;
 					}
 					waitforFailover();
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 
@@ -447,12 +448,12 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries) {
+					if (tries == NUM_RETRIES) {
 						throw ex;
 					}
 					waitforFailover();
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 
@@ -469,12 +470,12 @@ public class RedisDataCache implements DataCache {
 					sucess = true;
 				} catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
 					log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
-					if (tries == numRetries) {
+					if (tries == NUM_RETRIES) {
 						throw ex;
 					}
 					waitforFailover();
 				}
-			} while (!sucess && tries <= numRetries);
+			} while (!sucess && tries <= NUM_RETRIES);
 			return retVal;
 		}
 
