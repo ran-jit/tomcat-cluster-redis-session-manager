@@ -347,7 +347,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 	 * @return
 	 */
 	private int getSessionTimeout(Session session) {
-		int timeout = getContextIns().getSessionTimeout();
+		int timeout = getContextIns().getSessionTimeout() * 60;
 		int sessionTimeout = (session == null) ? 0 : session.getMaxInactiveInterval();
 		return (sessionTimeout < timeout) ? ((timeout < 1800) ? 1800 : timeout) : sessionTimeout;
 	}
