@@ -40,10 +40,8 @@ class RedisCacheUtil implements DataCache {
     String retVal = null;
     do {
       tries++;
-      try {
-        Jedis jedis = pool.getResource();
+      try (Jedis jedis = pool.getResource()) {
         retVal = jedis.set(key.getBytes(), value);
-        jedis.close();
         sucess = true;
       } catch (JedisConnectionException ex) {
         log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
@@ -65,10 +63,8 @@ class RedisCacheUtil implements DataCache {
     Long retVal = null;
     do {
       tries++;
-      try {
-        Jedis jedis = pool.getResource();
+      try (Jedis jedis = pool.getResource()) {
         retVal = jedis.setnx(key.getBytes(), value);
-        jedis.close();
         sucess = true;
       } catch (JedisConnectionException ex) {
         log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
@@ -90,10 +86,8 @@ class RedisCacheUtil implements DataCache {
     Long retVal = null;
     do {
       tries++;
-      try {
-        Jedis jedis = pool.getResource();
+      try (Jedis jedis = pool.getResource()) {
         retVal = jedis.expire(key, seconds);
-        jedis.close();
         sucess = true;
       } catch (JedisConnectionException ex) {
         log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
@@ -115,10 +109,8 @@ class RedisCacheUtil implements DataCache {
     byte[] retVal = null;
     do {
       tries++;
-      try {
-        Jedis jedis = pool.getResource();
+      try (Jedis jedis = pool.getResource()) {
         retVal = jedis.get(key.getBytes());
-        jedis.close();
         sucess = true;
       } catch (JedisConnectionException ex) {
         log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
@@ -140,10 +132,8 @@ class RedisCacheUtil implements DataCache {
     Long retVal = null;
     do {
       tries++;
-      try {
-        Jedis jedis = pool.getResource();
+      try (Jedis jedis = pool.getResource()) {
         retVal = jedis.del(key);
-        jedis.close();
         sucess = true;
       } catch (JedisConnectionException ex) {
         log.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
