@@ -46,4 +46,5 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
 	* **&#60;&#47;session-config&#62;**
 
 ### Note:
+  * All your session attribute values must implement java.io.Serializable.
   * This supports, both redis stand-alone and multiple node cluster based on the redis-data-cache.properties configuration.
