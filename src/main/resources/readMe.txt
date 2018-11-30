@@ -38,4 +38,5 @@ Steps to be done,
 		<session-config>
 
 Note:
+  * All your session attribute values must implement java.io.Serializable.
   * This supports, both redis stand-alone and multiple node cluster based on the redis-data-cache.properties configuration.
