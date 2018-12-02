@@ -1,68 +1,82 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>tomcat-cluster-redis-session-manager</groupId>
-	<artifactId>tomcat-cluster-redis-session-manager</artifactId>
-	<version>2.0.5</version>
-	<packaging>jar</packaging>
+    <groupId>tomcat-cluster-redis-session-manager</groupId>
+    <artifactId>tomcat-cluster-redis-session-manager</artifactId>
+    <version>2.0.5</version>
+    <packaging>jar</packaging>
 
-	<name>tomcat-cluster-redis-session-manager</name>
-	<url>http://maven.apache.org</url>
+    <name>tomcat-cluster-redis-session-manager</name>
+    <url>http://maven.apache.org</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.7</java.version>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.7</java.version>
 
-	<dependencies>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>2.9.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-			<version>2.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
-		</dependency>
+        <jedis.version>2.9.0</jedis.version>
+        <commons-pool2.version>2.4.2</commons-pool2.version>
+        <commons-logging.version>1.2</commons-logging.version>
 
-		<!-- For local development -->
-		<!-- <dependency>
-			<groupId>apache-tomcat</groupId>
-			<artifactId>catalina</artifactId>
-			<version>apache-tomcat-8.5.20</version>
-		</dependency>
-		<dependency>
-			<groupId>apache-tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>apache-tomcat-8.5.20</version>
-		</dependency>
-		<dependency>
-			<groupId>apache-tomcat</groupId>
-			<artifactId>tomcat-api</artifactId>
-			<version>apache-tomcat-8.5.20</version>
-		</dependency> -->
-		<!-- For local development end.. -->
-	</dependencies>
+        <maven-compiler.version>3.6.1</maven-compiler.version>
+        <source-java.version>1.7</source-java.version>
+        <target-java.version>${source-java.version}</target-java.version>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <!-- For local development properties begins.. -->
+        <tomcat-catalina.version>apache-tomcat-8.5.32</tomcat-catalina.version>
+        <tomcat-servlet-api.version>apache-tomcat-8.5.32</tomcat-servlet-api.version>
+        <tomcat-api.version>apache-tomcat-8.5.32</tomcat-api.version>
+        <!-- For local development properties end.. -->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>${commons-pool2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons-logging.version}</version>
+        </dependency>
+
+        <!-- For local development dependency begins.. -->
+        <dependency>
+            <groupId>apache-tomcat</groupId>
+            <artifactId>catalina</artifactId>
+            <version>${tomcat-catalina.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>apache-tomcat</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${tomcat-servlet-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>apache-tomcat</groupId>
+            <artifactId>tomcat-api</artifactId>
+            <version>${tomcat-api.version}</version>
+        </dependency>
+        <!-- For local development dependency end.. -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <source>${source-java.version}</source>
+                    <target>${target-java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

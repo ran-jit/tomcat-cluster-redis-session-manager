@@ -1,40 +1,49 @@
 package tomcat.request.session.data.cache;
 
-/**
- * Tomcat clustering with Redis data-cache implementation.
- *
- * API for Data cache.
- *
- * @author Ranjith Manickam
- * @since 2.0
- */
+/** author: Ranjith Manickam @ 12 Jul' 2018 */
 public interface DataCache {
 
-  /**
-   * To set value in data-cache
-   */
-  byte[] set(String key, byte[] value);
+    /**
+     * Set value in data-cache.
+     *
+     * @param key   - key with which the specified value is to be associated.
+     * @param value - value to be associated with the specified key.
+     * @return - Returns the value.
+     */
+    byte[] set(String key, byte[] value);
 
-  /**
-   * To set value if key not exists in data-cache
-   *
-   * Returns If key exists = 0 else 1
-   */
-  Long setnx(String key, byte[] value);
+    /**
+     * Set value if key not exists in data-cache.
+     *
+     * @param key   - key with which the specified value is to be associated.
+     * @param value - value to be associated with the specified key.
+     * @return - Returns '0' if key already exists else '1'.
+     */
+    Long setnx(String key, byte[] value);
 
-  /**
-   * To expire the value based on key in data-cache
-   */
-  Long expire(String key, int seconds);
+    /**
+     * Set expiry in data-cache.
+     *
+     * @param key     - key with which the specified value is to be associated.
+     * @param seconds - expiration time in seconds.
+     * @return - Returns the expiration time in seconds.
+     */
+    Long expire(String key, int seconds);
 
-  /**
-   * To get the value based on key from data-cache
-   */
-  byte[] get(String key);
+    /**
+     * Get value from data-cache.
+     *
+     * @param key - key with which the specified value is to be associated.
+     * @return - Returns the value.
+     */
+    byte[] get(String key);
 
-  /**
-   * To delete the value based on key from data-cache
-   */
-  Long delete(String key);
+    /**
+     * Delete value from data-cache.
+     *
+     * @param key - key with which the specified value is to be associated.
+     * @return - Returns the number of keys that were removed.
+     */
+    Long delete(String key);
 
 }
