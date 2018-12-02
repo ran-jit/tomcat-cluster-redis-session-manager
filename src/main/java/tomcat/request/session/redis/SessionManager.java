@@ -121,8 +121,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     @Override
     public Session createSession(String sessionId) {
         if (sessionId != null) {
-            sessionId =
-                    (this.dataCache.setnx(sessionId, SessionConstants.NULL_SESSION) == 0L) ? null : sessionId;
+            sessionId = (this.dataCache.setnx(sessionId, SessionConstants.NULL_SESSION) == 0L) ? null : sessionId;
         } else {
             do {
                 sessionId = generateSessionId();
@@ -168,8 +167,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     @Override
     public Session findSession(String sessionId) throws IOException {
         Session session = null;
-        if (sessionId != null && this.sessionContext.get() != null && sessionId
-                .equals(this.sessionContext.get().getId())) {
+        if (sessionId != null && this.sessionContext.get() != null && sessionId.equals(this.sessionContext.get().getId())) {
             session = this.sessionContext.get().getSession();
         } else {
             byte[] data = this.dataCache.get(sessionId);
@@ -234,7 +232,6 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     private void initialize() {
         try {
             this.dataCache = new RedisCache();
-
             this.serializer = new SerializationUtil();
             Context context = getContextIns();
             ClassLoader loader = (context != null && context.getLoader() != null) ? context.getLoader().getClassLoader() : null;
@@ -254,24 +251,22 @@ public class SessionManager extends ManagerBase implements Lifecycle {
                     ? this.sessionContext.get().getMetadata().getAttributesHash() : null;
             byte[] currentHash = serializer.getSessionAttributesHashCode(newSession);
 
-            if (forceSave || newSession.isDirty()
-                    || (isPersisted =
-                    (this.sessionContext.get() != null) ? this.sessionContext.get().isPersisted() : null)
-                    == null
+            if (forceSave
+                    || newSession.isDirty()
+                    || (isPersisted = (this.sessionContext.get() != null) ? this.sessionContext.get().isPersisted() : null) == null
                     || !isPersisted || !Arrays.equals(hash, currentHash)) {
 
                 SessionMetadata metadata = new SessionMetadata();
                 metadata.setAttributesHash(currentHash);
 
-                this.dataCache
-                        .set(newSession.getId(), serializer.serializeSessionData(newSession, metadata));
+                this.dataCache.set(newSession.getId(), serializer.serializeSessionData(newSession, metadata));
                 newSession.resetDirtyTracking();
                 setValues(true, metadata);
             }
 
             int timeout = getSessionTimeout(newSession);
             this.dataCache.expire(newSession.getId(), timeout);
-            LOGGER.trace("Session [" + newSession.getId() + "] expire in [" + timeout + "] seconds.");
+            LOGGER.debug("Session [" + newSession.getId() + "] expire in [" + timeout + "] seconds.");
 
         } catch (IOException ex) {
             LOGGER.error("Error occurred while saving the session object in data cache..", ex);
@@ -289,15 +284,13 @@ public class SessionManager extends ManagerBase implements Lifecycle {
                 } else {
                     remove(session);
                 }
-                LOGGER.trace(
-                        "Session object " + (session.isValid() ? "saved: " : "removed: ") + session.getId());
+                LOGGER.debug("Session object " + (session.isValid() ? "saved: " : "removed: ") + session.getId());
             }
         } catch (Exception ex) {
             LOGGER.error("Error occurred while processing post request process..", ex);
         } finally {
             this.sessionContext.remove();
-            LOGGER.trace(
-                    "Session removed from ThreadLocal:" + ((session != null) ? session.getIdInternal() : ""));
+            LOGGER.debug("Session removed from ThreadLocal:" + ((session != null) ? session.getIdInternal() : ""));
         }
     }
 

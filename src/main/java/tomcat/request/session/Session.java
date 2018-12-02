@@ -73,10 +73,8 @@ public class Session extends StandardSession {
         super.setAttribute(key, value);
 
         if ((value != null || oldValue != null)
-                && (value == null && oldValue != null || oldValue == null && value != null
-                || !value.getClass().isInstance(oldValue) || !value.equals(oldValue))) {
-            if (this.manager instanceof SessionManager && ((SessionManager) this.manager)
-                    .getSaveOnChange()) {
+                && (value == null && oldValue != null || oldValue == null && value != null || !value.getClass().isInstance(oldValue) || !value.equals(oldValue))) {
+            if (this.manager instanceof SessionManager && ((SessionManager) this.manager).getSaveOnChange()) {
                 ((SessionManager) this.manager).save(this, true);
             } else {
                 this.changedAttributes.put(key, value);
@@ -100,8 +98,7 @@ public class Session extends StandardSession {
     @Override
     public void removeAttribute(String name) {
         super.removeAttribute(name);
-        if (this.manager instanceof SessionManager && ((SessionManager) this.manager)
-                .getSaveOnChange()) {
+        if (this.manager instanceof SessionManager && ((SessionManager) this.manager).getSaveOnChange()) {
             ((SessionManager) this.manager).save(this, true);
         } else {
             this.dirty = true;
