@@ -24,12 +24,12 @@ public class SessionHandlerValve extends ValveBase {
 
     /** {@inheritDoc} */
     @Override
-    public void invoke(Request request, Response response) throws IOException, ServletException {
+    public void invoke(Request request, Response response) throws BackendException {
         try {
             getNext().invoke(request, response);
         } catch (IOException | ServletException | RuntimeException ex) {
             LOGGER.error("Error processing request", ex);
-            new BackendException();
+            throw new BackendException();
         } finally {
             manager.afterRequest(request);
         }
