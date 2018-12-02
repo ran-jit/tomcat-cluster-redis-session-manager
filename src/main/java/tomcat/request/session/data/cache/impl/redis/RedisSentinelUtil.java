@@ -5,7 +5,7 @@ import redis.clients.jedis.JedisSentinelPool;
 
 import java.util.Set;
 
-/** author: Ranjith Manickam @ 12 Jul' 2018 */
+/** author: Ranjith Manickam @ 3 Dec' 2018 */
 class RedisSentinelUtil extends AbstractRedisUtil {
 
     private static final long FAILIURE_WAIT_TIME = 2000L;

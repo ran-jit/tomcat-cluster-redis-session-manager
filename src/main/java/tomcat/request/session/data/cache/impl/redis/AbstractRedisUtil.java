@@ -7,7 +7,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.Pool;
 import tomcat.request.session.data.cache.DataCache;
 
-/** author: Ranjith Manickam @ 12 Jul' 2018 */
+/** author: Ranjith Manickam @ 3 Dec' 2018 */
 public abstract class AbstractRedisUtil implements DataCache {
 
     private static final int NUM_RETRIES = 3;
