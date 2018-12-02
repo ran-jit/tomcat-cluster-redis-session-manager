@@ -320,8 +320,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     }
 
     /** To set values to session context. */
-    private void setValues(String sessionId, Session session, boolean isPersisted,
-                           SessionMetadata metadata) {
+    private void setValues(String sessionId, Session session, boolean isPersisted, SessionMetadata metadata) {
         setValues(sessionId, session);
         setValues(isPersisted, metadata);
     }
