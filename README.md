@@ -4,7 +4,7 @@ Redis session manager is pluggable one. It uses to store sessions into Redis for
 
 The HTTP Requests session setAttribute(name, value) method stores the session into Redis (session attribute values must be Serializable) immediately and the session getAttribute(name) method request directly from Redis. Also, the inactive sessions has been removed based on the session time-out configuration.
 
-It supports redis default, sentinel and cluster mode, based on the configuration.
+Supports redis default, sentinel and cluster mode, based on the configuration.
 
 Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer.
 
