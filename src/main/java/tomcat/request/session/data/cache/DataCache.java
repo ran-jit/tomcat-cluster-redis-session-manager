@@ -45,5 +45,4 @@ public interface DataCache {
      * @return - Returns the number of keys that were removed.
      */
     Long delete(String key);
-
 }

@@ -53,5 +53,4 @@ public class SessionContext {
     public String toString() {
         return "SessionContext [id=" + id + "]";
     }
-
 }

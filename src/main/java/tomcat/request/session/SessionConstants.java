@@ -18,5 +18,4 @@ public interface SessionConstants {
             throw new IllegalArgumentException("Invalid session policy [" + name + "]");
         }
     }
-
 }

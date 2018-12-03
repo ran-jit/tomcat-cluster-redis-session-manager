@@ -6,7 +6,6 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Valve;
-import org.apache.catalina.connector.Request;
 import org.apache.catalina.session.ManagerBase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,7 +16,7 @@ import tomcat.request.session.SessionConstants.SessionPolicy;
 import tomcat.request.session.SessionContext;
 import tomcat.request.session.SessionMetadata;
 import tomcat.request.session.data.cache.DataCache;
-import tomcat.request.session.data.cache.impl.redis.RedisCache;
+import tomcat.request.session.data.cache.DataCacheFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -29,40 +28,15 @@ import java.util.Set;
 public class SessionManager extends ManagerBase implements Lifecycle {
 
     private DataCache dataCache;
-    protected SerializationUtil serializer;
-    protected SessionHandlerValve handlerValve;
+    private SerializationUtil serializer;
 
-    protected ThreadLocal<SessionContext> sessionContext = new ThreadLocal<>();
-    protected Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
+    private ThreadLocal<SessionContext> sessionContext = new ThreadLocal<>();
+    private Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
 
     private static final Log LOGGER = LogFactory.getLog(SessionManager.class);
 
-    /** To get session persist policies */
-    public String getSessionPersistPolicies() {
-        String policyStr = null;
-        for (SessionPolicy policy : this.sessionPolicy) {
-            policyStr = (policyStr == null) ? policy.name() : policyStr.concat(",").concat(policy.name());
-        }
-        return policyStr;
-    }
-
-    /** To set session persist policies */
-    public void setSessionPersistPolicies(String policyStr) {
-        Set<SessionPolicy> policySet = EnumSet.of(SessionPolicy.DEFAULT);
-        String[] policyArray = policyStr.split(",");
-
-        for (String policy : policyArray) {
-            policySet.add(SessionPolicy.fromName(policy));
-        }
-        this.sessionPolicy = policySet;
-    }
-
     public boolean getSaveOnChange() {
         return this.sessionPolicy.contains(SessionPolicy.SAVE_ON_CHANGE);
-    }
-
-    public boolean getAlwaysSaveAfterRequest() {
-        return this.sessionPolicy.contains(SessionPolicy.ALWAYS_SAVE_AFTER_REQUEST);
     }
 
     /** {@inheritDoc} */
@@ -93,8 +67,8 @@ public class SessionManager extends ManagerBase implements Lifecycle {
         Context context = getContextIns();
         for (Valve valve : context.getPipeline().getValves()) {
             if (valve instanceof SessionHandlerValve) {
-                this.handlerValve = (SessionHandlerValve) valve;
-                this.handlerValve.setSessionManager(this);
+                SessionHandlerValve handlerValve = (SessionHandlerValve) valve;
+                handlerValve.setSessionManager(this);
                 initializedValve = true;
                 break;
             }
@@ -103,9 +77,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
         if (!initializedValve) {
             throw new LifecycleException("Session handling valve is not initialized..");
         }
-
         initialize();
-
         LOGGER.info("The sessions will expire after " + (getSessionTimeout(null)) + " seconds.");
         context.setDistributable(true);
     }
@@ -166,41 +138,41 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     /** {@inheritDoc} */
     @Override
     public Session findSession(String sessionId) throws IOException {
-        Session session = null;
         if (sessionId != null && this.sessionContext.get() != null && sessionId.equals(this.sessionContext.get().getId())) {
-            session = this.sessionContext.get().getSession();
-        } else {
-            byte[] data = this.dataCache.get(sessionId);
-
-            boolean isPersisted = false;
-            SessionMetadata metadata = null;
-            if (data == null) {
-                sessionId = null;
-                isPersisted = false;
-            } else {
-                if (Arrays.equals(SessionConstants.NULL_SESSION, data)) {
-                    throw new IOException("NULL session data");
-                }
-                try {
-                    metadata = new SessionMetadata();
-                    Session newSession = createEmptySession();
-                    this.serializer.deserializeSessionData(data, newSession, metadata);
-
-                    newSession.setId(sessionId);
-                    newSession.access();
-                    newSession.setNew(false);
-                    newSession.setValid(true);
-                    newSession.resetDirtyTracking();
-                    newSession.setMaxInactiveInterval(getSessionTimeout(newSession));
-
-                    session = newSession;
-                    isPersisted = true;
-                } catch (Exception ex) {
-                    LOGGER.error("Error occurred while de-serializing the session object..", ex);
-                }
-            }
-            setValues(sessionId, session, isPersisted, metadata);
+            return this.sessionContext.get().getSession();
         }
+
+        Session session = null;
+        boolean isPersisted = false;
+        SessionMetadata metadata = null;
+
+        byte[] data = this.dataCache.get(sessionId);
+        if (data == null) {
+            sessionId = null;
+            isPersisted = false;
+        } else {
+            if (Arrays.equals(SessionConstants.NULL_SESSION, data)) {
+                throw new IOException("NULL session data");
+            }
+            try {
+                metadata = new SessionMetadata();
+                Session newSession = createEmptySession();
+                this.serializer.deserializeSessionData(data, newSession, metadata);
+
+                newSession.setId(sessionId);
+                newSession.access();
+                newSession.setNew(false);
+                newSession.setValid(true);
+                newSession.resetDirtyTracking();
+                newSession.setMaxInactiveInterval(getSessionTimeout(newSession));
+
+                session = newSession;
+                isPersisted = true;
+            } catch (Exception ex) {
+                LOGGER.error("Error occurred while de-serializing the session object..", ex);
+            }
+        }
+        setValues(sessionId, session, isPersisted, metadata);
         return session;
     }
 
@@ -218,20 +190,20 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 
     /** {@inheritDoc} */
     @Override
-    public void load() throws ClassNotFoundException, IOException {
+    public void load() {
         // Auto-generated method stub
     }
 
     /** {@inheritDoc} */
     @Override
-    public void unload() throws IOException {
+    public void unload() {
         // Auto-generated method stub
     }
 
     /** To initialize the session manager. */
     private void initialize() {
         try {
-            this.dataCache = new RedisCache();
+            this.dataCache = new DataCacheFactory(getSessionTimeout(null)).getDataCache();
             this.serializer = new SerializationUtil();
             Context context = getContextIns();
             ClassLoader loader = (context != null && context.getLoader() != null) ? context.getLoader().getClassLoader() : null;
@@ -249,7 +221,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
             Session newSession = (Session) session;
             byte[] hash = (this.sessionContext.get() != null && this.sessionContext.get().getMetadata() != null)
                     ? this.sessionContext.get().getMetadata().getAttributesHash() : null;
-            byte[] currentHash = serializer.getSessionAttributesHashCode(newSession);
+            byte[] currentHash = this.serializer.getSessionAttributesHashCode(newSession);
 
             if (forceSave
                     || newSession.isDirty()
@@ -259,7 +231,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
                 SessionMetadata metadata = new SessionMetadata();
                 metadata.setAttributesHash(currentHash);
 
-                this.dataCache.set(newSession.getId(), serializer.serializeSessionData(newSession, metadata));
+                this.dataCache.set(newSession.getId(), this.serializer.serializeSessionData(newSession, metadata));
                 newSession.resetDirtyTracking();
                 setValues(true, metadata);
             }
@@ -274,13 +246,13 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     }
 
     /** To process post request process. */
-    public void afterRequest(Request request) {
+    void afterRequest() {
         Session session = null;
         try {
             session = (this.sessionContext.get() != null) ? this.sessionContext.get().getSession() : null;
             if (session != null) {
                 if (session.isValid()) {
-                    save(session, getAlwaysSaveAfterRequest());
+                    save(session, this.sessionPolicy.contains(SessionPolicy.ALWAYS_SAVE_AFTER_REQUEST));
                 } else {
                     remove(session);
                 }
@@ -340,5 +312,4 @@ public class SessionManager extends ManagerBase implements Lifecycle {
         }
         throw new RuntimeException("Error occurred while creating container instance");
     }
-
 }

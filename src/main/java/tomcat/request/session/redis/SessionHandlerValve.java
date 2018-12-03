@@ -18,7 +18,7 @@ public class SessionHandlerValve extends ValveBase {
     private SessionManager manager;
 
     /** To set session manager */
-    public void setSessionManager(SessionManager manager) {
+    void setSessionManager(SessionManager manager) {
         this.manager = manager;
     }
 
@@ -31,8 +31,7 @@ public class SessionHandlerValve extends ValveBase {
             LOGGER.error("Error processing request", ex);
             throw new BackendException();
         } finally {
-            manager.afterRequest(request);
+            manager.afterRequest();
         }
     }
-
 }

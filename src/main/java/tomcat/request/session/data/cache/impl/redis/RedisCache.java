@@ -1,18 +1,13 @@
 package tomcat.request.session.data.cache.impl.redis;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
-import tomcat.request.session.SessionConstants;
 import tomcat.request.session.data.cache.DataCache;
-import tomcat.request.session.data.cache.impl.redis.RedisConstants.RedisConfigType;
+import tomcat.request.session.data.cache.DataCacheConstants;
+import tomcat.request.session.data.cache.DataCacheConstants.RedisConfigType;
+import tomcat.request.session.data.cache.DataCacheFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,12 +18,10 @@ import java.util.Set;
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
 public class RedisCache implements DataCache {
 
-    private static DataCache dataCache;
+    private DataCache dataCache;
 
-    private static final Log LOGGER = LogFactory.getLog(RedisCache.class);
-
-    public RedisCache() {
-        initialize();
+    public RedisCache(Properties properties) {
+        initialize(properties);
     }
 
     /** {@inheritDoc} */
@@ -61,44 +54,38 @@ public class RedisCache implements DataCache {
         return dataCache.delete(key);
     }
 
-    /** To initialize the redis data cache. */
-    private void initialize() {
-        if (dataCache != null) {
-            return;
-        }
-        Properties properties = getProperties();
-
+    private void initialize(Properties properties) {
         RedisConfigType configType;
-        if (Boolean.valueOf(properties.getProperty(RedisConstants.CLUSTER_ENABLED))) {
+        if (Boolean.valueOf(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_CLUSTER_ENABLED))) {
             configType = RedisConfigType.CLUSTER;
-        } else if (Boolean.valueOf(properties.getProperty(RedisConstants.SENTINEL_ENABLED))) {
+        } else if (Boolean.valueOf(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_SENTINEL_ENABLED))) {
             configType = RedisConfigType.SENTINEL;
         } else {
             configType = RedisConfigType.DEFAULT;
         }
 
-        String hosts = properties.getProperty(RedisConstants.HOSTS, Protocol.DEFAULT_HOST.concat(":").concat(String.valueOf(Protocol.DEFAULT_PORT)));
+        String hosts = DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_HOSTS, String.format("%s:%s", Protocol.DEFAULT_HOST, Protocol.DEFAULT_PORT));
         Collection<?> nodes = getJedisNodes(hosts, configType);
 
-        String password = properties.getProperty(RedisConstants.PASSWORD);
+        String password = DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_PASSWORD);
         password = (password != null && !password.isEmpty()) ? password : null;
 
-        int database = Integer.parseInt(properties.getProperty(RedisConstants.DATABASE, String.valueOf(Protocol.DEFAULT_DATABASE)));
+        int database = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_DATABASE));
 
-        int timeout = Integer.parseInt(properties.getProperty(RedisConstants.TIMEOUT, String.valueOf(Protocol.DEFAULT_TIMEOUT)));
+        int timeout = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TIMEOUT));
         timeout = (timeout < Protocol.DEFAULT_TIMEOUT) ? Protocol.DEFAULT_TIMEOUT : timeout;
 
         JedisPoolConfig poolConfig = getPoolConfig(properties);
         switch (configType) {
             case CLUSTER:
-                dataCache = new RedisClusterUtil((Set<HostAndPort>) nodes, password, timeout, poolConfig);
+                dataCache = new RedisClusterManager((Set<HostAndPort>) nodes, password, timeout, poolConfig);
                 break;
             case SENTINEL:
-                String masterName = String.valueOf(properties.getProperty(RedisConstants.SENTINEL_MASTER, RedisConstants.DEFAULT_SENTINEL_MASTER));
-                dataCache = new RedisSentinelUtil((Set<String>) nodes, masterName, password, database, timeout, poolConfig);
+                String masterName = String.valueOf(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_SENTINEL_MASTER));
+                dataCache = new RedisSentinelManager((Set<String>) nodes, masterName, password, database, timeout, poolConfig);
                 break;
             default:
-                dataCache = new RedisUtil(((List<String>) nodes).get(0), Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout, poolConfig);
+                dataCache = new RedisStandardManager(((List<String>) nodes).get(0), Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout, poolConfig);
                 break;
         }
     }
@@ -111,28 +98,28 @@ public class RedisCache implements DataCache {
      */
     private JedisPoolConfig getPoolConfig(Properties properties) {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
-        int maxActive = Integer.parseInt(properties.getProperty(RedisConstants.MAX_ACTIVE, RedisConstants.DEFAULT_MAX_ACTIVE_VALUE));
+        int maxActive = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MAX_ACTIVE));
         poolConfig.setMaxTotal(maxActive);
 
-        boolean testOnBorrow = Boolean.parseBoolean(properties.getProperty(RedisConstants.TEST_ONBORROW, RedisConstants.DEFAULT_TEST_ONBORROW_VALUE));
+        boolean testOnBorrow = Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_ONBORROW));
         poolConfig.setTestOnBorrow(testOnBorrow);
 
-        boolean testOnReturn = Boolean.parseBoolean(properties.getProperty(RedisConstants.TEST_ONRETURN, RedisConstants.DEFAULT_TEST_ONRETURN_VALUE));
+        boolean testOnReturn = Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_ONRETURN));
         poolConfig.setTestOnReturn(testOnReturn);
 
-        int maxIdle = Integer.parseInt(properties.getProperty(RedisConstants.MAX_ACTIVE, RedisConstants.DEFAULT_MAX_ACTIVE_VALUE));
+        int maxIdle = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MAX_ACTIVE));
         poolConfig.setMaxIdle(maxIdle);
 
-        int minIdle = Integer.parseInt(properties.getProperty(RedisConstants.MIN_IDLE, RedisConstants.DEFAULT_MIN_IDLE_VALUE));
+        int minIdle = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MIN_IDLE));
         poolConfig.setMinIdle(minIdle);
 
-        boolean testWhileIdle = Boolean.parseBoolean(properties.getProperty(RedisConstants.TEST_WHILEIDLE, RedisConstants.DEFAULT_TEST_WHILEIDLE_VALUE));
+        boolean testWhileIdle = Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_WHILEIDLE));
         poolConfig.setTestWhileIdle(testWhileIdle);
 
-        int testNumPerEviction = Integer.parseInt(properties.getProperty(RedisConstants.TEST_NUMPEREVICTION, RedisConstants.DEFAULT_TEST_NUMPEREVICTION_VALUE));
+        int testNumPerEviction = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_NUMPEREVICTION));
         poolConfig.setNumTestsPerEvictionRun(testNumPerEviction);
 
-        long timeBetweenEviction = Long.parseLong(properties.getProperty(RedisConstants.TIME_BETWEENEVICTION, RedisConstants.DEFAULT_TIME_BETWEENEVICTION_VALUE));
+        long timeBetweenEviction = Long.parseLong(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TIME_BETWEENEVICTION));
         poolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEviction);
         return poolConfig;
     }
@@ -174,33 +161,4 @@ public class RedisCache implements DataCache {
         }
         return nodes;
     }
-
-    /** To get redis data cache properties. */
-    private Properties getProperties() {
-        Properties properties = new Properties();
-        try {
-            String filePath = System.getProperty(SessionConstants.CATALINA_BASE).concat(File.separator)
-                    .concat(SessionConstants.CONF).concat(File.separator)
-                    .concat(RedisConstants.PROPERTIES_FILE);
-
-            InputStream resourceStream = null;
-            try {
-                resourceStream = (!filePath.isEmpty() && new File(filePath).exists()) ? new FileInputStream(filePath) : null;
-
-                if (resourceStream == null) {
-                    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                    resourceStream = loader.getResourceAsStream(RedisConstants.PROPERTIES_FILE);
-                }
-                properties.load(resourceStream);
-            } finally {
-                if (resourceStream != null) {
-                    resourceStream.close();
-                }
-            }
-        } catch (IOException ex) {
-            LOGGER.error("Error while loading task scheduler properties", ex);
-        }
-        return properties;
-    }
-
 }

@@ -74,5 +74,4 @@ public class SerializationUtil {
             session.readObjectData(ois);
         }
     }
-
 }

@@ -18,11 +18,11 @@ public class Session extends StandardSession {
 
     private static final long serialVersionUID = -6056744304016869278L;
 
-    protected Boolean dirty;
-    protected Map<String, Object> changedAttributes;
+    private Boolean dirty;
+    private Map<String, Object> changedAttributes;
 
-    protected static Boolean manualDirtyTrackingSupportEnabled = false;
-    protected static String manualDirtyTrackingAttributeKey = "__changed__";
+    private static Boolean manualDirtyTrackingSupportEnabled = false;
+    private static String manualDirtyTrackingAttributeKey = "__changed__";
 
     public Session(Manager manager) {
         super(manager);
@@ -131,5 +131,4 @@ public class Session extends StandardSession {
     public void invalidate() {
         super.invalidate();
     }
-
 }

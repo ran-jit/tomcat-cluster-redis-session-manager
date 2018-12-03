@@ -6,17 +6,18 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.Pool;
 import tomcat.request.session.data.cache.DataCache;
+import tomcat.request.session.data.cache.DataCacheConstants;
 
-/** author: Ranjith Manickam @ 3 Dec' 2018 */
-public abstract class AbstractRedisUtil implements DataCache {
+/** author: Ranjith Manickam @ 12 Jul' 2018 */
+abstract class RedisManager implements DataCache {
 
     private static final int NUM_RETRIES = 3;
-    private static final Log LOGGER = LogFactory.getLog(RedisUtil.class);
+    private static final Log LOGGER = LogFactory.getLog(RedisManager.class);
 
     private final Pool<Jedis> pool;
     private final long failiureWaitTime;
 
-    AbstractRedisUtil(Pool<Jedis> pool, long failiureWaitTime) {
+    RedisManager(Pool<Jedis> pool, long failiureWaitTime) {
         this.pool = pool;
         this.failiureWaitTime = failiureWaitTime;
     }
@@ -118,7 +119,7 @@ public abstract class AbstractRedisUtil implements DataCache {
      * @param ex    - jedis exception.
      */
     void handleException(int tries, RuntimeException ex) {
-        LOGGER.error(RedisConstants.CONN_FAILED_RETRY_MSG + tries);
+        LOGGER.error(DataCacheConstants.REDIS_CONN_FAILED_RETRY_MSG + tries);
         if (tries == NUM_RETRIES) {
             throw ex;
         }
@@ -128,5 +129,4 @@ public abstract class AbstractRedisUtil implements DataCache {
             Thread.currentThread().interrupt();
         }
     }
-
 }

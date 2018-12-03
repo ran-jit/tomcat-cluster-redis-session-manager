@@ -10,7 +10,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import java.util.Set;
 
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
-public class RedisClusterUtil extends AbstractRedisUtil {
+class RedisClusterManager extends RedisManager {
 
     private final JedisCluster cluster;
 
@@ -18,13 +18,12 @@ public class RedisClusterUtil extends AbstractRedisUtil {
     private static final int DEFAULT_MAX_REDIRECTIONS = 5;
     private static final long FAILIURE_WAIT_TIME = 4000L;
 
-    RedisClusterUtil(Set<HostAndPort> nodes,
-                     String password,
-                     int timeout,
-                     JedisPoolConfig poolConfig) {
+    RedisClusterManager(Set<HostAndPort> nodes,
+                        String password,
+                        int timeout,
+                        JedisPoolConfig poolConfig) {
         super(null, FAILIURE_WAIT_TIME);
-        this.cluster = new JedisCluster(nodes, timeout, Protocol.DEFAULT_TIMEOUT, DEFAULT_MAX_REDIRECTIONS,
-                password, poolConfig);
+        this.cluster = new JedisCluster(nodes, timeout, Protocol.DEFAULT_TIMEOUT, DEFAULT_MAX_REDIRECTIONS, password, poolConfig);
     }
 
     /** {@inheritDoc} */
@@ -116,5 +115,4 @@ public class RedisClusterUtil extends AbstractRedisUtil {
         } while (retry && tries <= NUM_RETRIES);
         return retVal;
     }
-
 }
