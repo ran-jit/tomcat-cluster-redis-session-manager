@@ -22,11 +22,10 @@ public interface DataCacheConstants {
     String REDIS_TIME_BETWEENEVICTION = "redis.time.betweenEviction:60000";
 
     String REDIS_PASSWORD = "redis.password";
-    String REDIS_DATABASE = "redis.database";
-    String REDIS_TIMEOUT = "redis.timeout";
+    String REDIS_DATABASE = "redis.database:0";
+    String REDIS_TIMEOUT = "redis.timeout:2000";
 
-    String REDIS_SENTINEL_MASTER = "redis.sentinel.master";
-    String REDIS_DEFAULT_SENTINEL_MASTER = "mymaster";
+    String REDIS_SENTINEL_MASTER = "redis.sentinel.master:mymaster";
 
     String REDIS_CONN_FAILED_RETRY_MSG = "Jedis connection failed, retrying...";
 
