@@ -3,6 +3,8 @@ package tomcat.request.session.data.cache.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import tomcat.request.session.data.cache.DataCache;
+import tomcat.request.session.data.cache.DataCacheConstants;
+import tomcat.request.session.data.cache.DataCacheFactory;
 import tomcat.request.session.data.cache.impl.redis.RedisCache;
 
 import java.io.Serializable;
@@ -10,12 +12,18 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /** author: Ranjith Manickam @ 3 Dec' 2018 */
 public class StandardDataCache extends RedisCache {
 
-    private Date lastSessionJobRun;
-    private boolean triggerRedisSync;
+    private boolean triggerDataSync;
+
+    private Date expiryJobTriggered;
+    private Date dataSyncJobTriggered;
+
+    private final int expiryJobTriggerInterval;
+    private final int dataSyncJobTriggerInterval;
 
     private final int sessionExpiryTime;
     private final Map<String, SessionData> sessionData;
@@ -24,8 +32,11 @@ public class StandardDataCache extends RedisCache {
         super(properties);
         this.sessionExpiryTime = sessionExpiryTime;
         this.sessionData = new ConcurrentHashMap<>();
-        this.lastSessionJobRun = new Date();
-        this.triggerRedisSync = false;
+        this.expiryJobTriggered = new Date();
+        this.dataSyncJobTriggered = new Date();
+        this.triggerDataSync = false;
+        this.expiryJobTriggerInterval = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.SESSION_EXPIRY_JOB_INTERVAL));
+        this.dataSyncJobTriggerInterval = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.SESSION_DATA_SYNC_JOB_INTERVAL));
     }
 
     /** {@inheritDoc} */
@@ -35,7 +46,7 @@ public class StandardDataCache extends RedisCache {
         try {
             return super.set(key, value);
         } catch (RuntimeException ex) {
-            this.triggerRedisSync = true;
+            this.triggerDataSync = true;
         }
         return value;
     }
@@ -48,7 +59,7 @@ public class StandardDataCache extends RedisCache {
             retValue = super.setnx(key, value);
         } catch (RuntimeException ex) {
             retValue = this.sessionData.containsKey(key) ? 0L : 1L;
-            this.triggerRedisSync = true;
+            this.triggerDataSync = true;
         }
 
         if (retValue == 1L) {
@@ -63,7 +74,7 @@ public class StandardDataCache extends RedisCache {
         try {
             return super.expire(key, seconds);
         } catch (RuntimeException ex) {
-            this.triggerRedisSync = true;
+            this.triggerDataSync = true;
         }
         return null;
     }
@@ -78,7 +89,7 @@ public class StandardDataCache extends RedisCache {
         try {
             return super.get(key);
         } catch (RuntimeException ex) {
-            this.triggerRedisSync = true;
+            this.triggerDataSync = true;
             throw ex;
         }
     }
@@ -90,7 +101,7 @@ public class StandardDataCache extends RedisCache {
         try {
             return super.delete(key);
         } catch (RuntimeException ex) {
-            this.triggerRedisSync = true;
+            this.triggerDataSync = true;
         }
         return (value == null) ? 0L : 1L;
     }
@@ -122,18 +133,21 @@ public class StandardDataCache extends RedisCache {
     /** To handle session data. */
     private synchronized void handleSessionData() {
         // redis sync
-        if (this.triggerRedisSync) {
-            new SessionDataSyncThread(this, this.sessionData, this.sessionExpiryTime);
-            this.triggerRedisSync = false;
+        if (this.triggerDataSync) {
+            long difference = new Date().getTime() - this.dataSyncJobTriggered.getTime();
+
+            if (difference >= TimeUnit.MINUTES.toMillis(this.dataSyncJobTriggerInterval)) {
+                new SessionDataSyncThread(this, this.sessionData, this.sessionExpiryTime);
+                this.triggerDataSync = false;
+                this.dataSyncJobTriggered = new Date();
+            }
         }
 
         // session expiry
-        long diff = new Date().getTime() - this.lastSessionJobRun.getTime();
-        long diffMinutes = diff / (60 * 1000) % 60;
-
-        if (diffMinutes > 0L) {
+        long difference = new Date().getTime() - this.expiryJobTriggered.getTime();
+        if (difference >= TimeUnit.MINUTES.toMillis(this.expiryJobTriggerInterval)) {
             new SessionDataExpiryThread(this.sessionData, this.sessionExpiryTime);
-            this.lastSessionJobRun = new Date();
+            this.expiryJobTriggered = new Date();
         }
     }
 

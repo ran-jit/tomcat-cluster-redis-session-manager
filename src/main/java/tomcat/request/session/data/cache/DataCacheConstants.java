@@ -7,7 +7,7 @@ public interface DataCacheConstants {
     String APPLICATION_PROPERTIES_FILE = "redis-data-cache.properties";
 
     // redis properties
-    String REDIS_HOSTS = "redis.hosts:127.0.0.1:6379";
+    String REDIS_HOSTS = "redis.hosts";
     String REDIS_CLUSTER_ENABLED = "redis.cluster.enabled:false";
     String REDIS_SENTINEL_ENABLED = "redis.sentinel.enabled:false";
     String REDIS_LB_STICKY_SESSION_ENABLED = "redis.load-balancer.sticky-session.enabled:false";
@@ -28,6 +28,9 @@ public interface DataCacheConstants {
     String REDIS_SENTINEL_MASTER = "redis.sentinel.master:mymaster";
 
     String REDIS_CONN_FAILED_RETRY_MSG = "Jedis connection failed, retrying...";
+
+    String SESSION_EXPIRY_JOB_INTERVAL = "redis.session.expiry.job.interval:60";
+    String SESSION_DATA_SYNC_JOB_INTERVAL = "redis.session.data-sync.job.interval:10";
 
     enum RedisConfigType {
         DEFAULT,
