@@ -17,9 +17,9 @@ public class DataCacheFactory {
 
     private static final Log LOGGER = LogFactory.getLog(DataCacheFactory.class);
 
-    private final long sessionExpiryTime;
+    private final int sessionExpiryTime;
 
-    public DataCacheFactory(long sessionExpiryTime) {
+    public DataCacheFactory(int sessionExpiryTime) {
         this.sessionExpiryTime = sessionExpiryTime;
     }
 
