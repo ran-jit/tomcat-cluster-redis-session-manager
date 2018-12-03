@@ -108,7 +108,7 @@ public class StandardDataCache extends RedisCache {
     /** Session data. */
     private class SessionData implements Serializable {
         private byte[] value;
-        private Date lastAccessedOn;
+        private long lastAccessedOn;
 
         SessionData(byte[] value) {
             this.value = value;
@@ -116,7 +116,7 @@ public class StandardDataCache extends RedisCache {
         }
 
         void updatedLastAccessedOn() {
-            this.lastAccessedOn = new Date();
+            this.lastAccessedOn = new Date().getTime();
         }
 
         byte[] getValue() {
@@ -124,7 +124,7 @@ public class StandardDataCache extends RedisCache {
             return this.value;
         }
 
-        Date getLastAccessedOn() {
+        long getLastAccessedOn() {
             return this.lastAccessedOn;
         }
     }
@@ -189,12 +189,12 @@ public class StandardDataCache extends RedisCache {
 
         private final Log LOGGER = LogFactory.getLog(SessionDataExpiryThread.class);
 
-        private final int sessionExpiryTime;
+        private final long expiry;
         private final Map<String, SessionData> sessionData;
 
         SessionDataExpiryThread(Map<String, SessionData> sessionData, int sessionExpiryTime) {
             this.sessionData = sessionData;
-            this.sessionExpiryTime = (sessionExpiryTime + 60) / 60;
+            this.expiry = TimeUnit.SECONDS.toMillis(sessionExpiryTime + 60);
             new Thread(this).start();
         }
 
@@ -208,10 +208,8 @@ public class StandardDataCache extends RedisCache {
                         continue;
                     }
 
-                    long diff = new Date().getTime() - data.getLastAccessedOn().getTime();
-                    long diffMinutes = diff / (60 * 1000) % 60;
-
-                    if (diffMinutes > this.sessionExpiryTime) {
+                    long difference = new Date().getTime() - data.getLastAccessedOn();
+                    if (difference >= this.expiry) {
                         this.sessionData.remove(key);
                     }
                 }
