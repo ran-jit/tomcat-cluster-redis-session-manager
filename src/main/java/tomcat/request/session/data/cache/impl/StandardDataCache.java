@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StandardDataCache extends RedisCache {
 
     private Date lastSessionJobRun;
-    private final Map<String, SessionData> sessionData = new ConcurrentHashMap<>();
+    private final Map<String, SessionData> sessionData;
 
     private final long sessionExpiryTime;
 
@@ -22,6 +22,7 @@ public class StandardDataCache extends RedisCache {
         super(properties);
         this.sessionExpiryTime = (sessionExpiryTime + 60) / 60;
         this.lastSessionJobRun = new Date();
+        this.sessionData = new ConcurrentHashMap<>();
     }
 
     /** {@inheritDoc} */
