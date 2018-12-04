@@ -53,15 +53,15 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
 <html>
 <body>
     <table border="1px" style="width: 80%;margin-left: 10%;margin-right: 10%;line-height: 1.5;">
-        <tr><th style="width: 20%;">Property</th><th style="width: 40%;">Description</th><th style="width: 30%;">Value</th></tr>
-        <tr><td>redis.hosts</td><td>Redis server running instance IP address and port number<br>ex: 127.0.0.1:6379, 127.0.0.2:6379, 127.0.0.2:6380, ..</td><td>default: 127.0.0.1:6379</td></tr>
-        <tr><td>redis.password</td><td>Redis protected password</td><td></td></tr>
-        <tr><td>redis.database</td><td>Redis database selection. (Numeric value)</td><td>default: 0</td></tr>
-        <tr><td>redis.timeout</td><td>Redis connection timeout</td><td>default: 2000</td></tr>
-        <tr><td>redis.cluster.enabled</td><td>To enable redis cluster mode</td><td>default: false<br>supported values: true/false</td></tr>
-        <tr><td>redis.sentinel.enabled</td><td>To enable redis sentinel mode</td><td>default: false<br>supported values: true/false</td></tr>
-        <tr><td>redis.sentinel.master</td><td>Redis sentinel master name</td><td>default: mymaster</td></tr>
-        <tr><td>lb.sticky-session.enabled</td><td>To enable redis and standard session mode<br><br>If enabled,<ol><li>Must be enabled sticky session in your load balancer configuration. Else this manager may not return the updated session values</li><li>Session values are stored in local jvm and redis</li><li>If redis is down/not responding, requests uses jvm stored session values to process user requests. Redis comes back the values will be synced</li></ol></td><td>default: false</td></tr>
+        <tr><th style="width: 30%;">Property</th><th style="width: 50%;">Description</th></tr>
+        <tr><td>redis.hosts</td><td>Redis server running instance IP address and port number<br/>ex: 127.0.0.1:6379, 127.0.0.2:6379, 127.0.0.2:6380, ..<br/>default: 127.0.0.1:6379</td></tr>
+        <tr><td>redis.password</td><td>Redis protected password</td></tr>
+        <tr><td>redis.database</td><td>Redis database selection. (Numeric value)<br/>default: 0</td></tr>
+        <tr><td>redis.timeout</td><td>Redis connection timeout<br/>default: 2000</td></tr>
+        <tr><td>redis.cluster.enabled</td><td>To enable redis cluster mode<br/>default: false<br>supported values: true/false</td></tr>
+        <tr><td>redis.sentinel.enabled</td><td>To enable redis sentinel mode<br/>default: false<br>supported values: true/false</td></tr>
+        <tr><td>redis.sentinel.master</td><td>Redis sentinel master name<br/>default: mymaster</td></tr>
+        <tr><td>lb.sticky-session.enabled</td><td>To enable redis and standard session mode<br><br>If enabled,<ol><li>Must be enabled sticky session in your load balancer configuration. Else this manager may not return the updated session values</li><li>Session values are stored in local jvm and redis</li><li>If redis is down/not responding, requests uses jvm stored session values to process user requests. Redis comes back the values will be synced</li></ol>default: false</td></tr>
     </table>
 </body>
 </html>
