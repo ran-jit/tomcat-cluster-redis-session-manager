@@ -10,7 +10,7 @@ public interface DataCacheConstants {
     String REDIS_HOSTS = "redis.hosts";
     String REDIS_CLUSTER_ENABLED = "redis.cluster.enabled:false";
     String REDIS_SENTINEL_ENABLED = "redis.sentinel.enabled:false";
-    String REDIS_LB_STICKY_SESSION_ENABLED = "redis.load-balancer.sticky-session.enabled:false";
+    String LB_STICKY_SESSION_ENABLED = "lb.sticky-session.enabled:false";
 
     String REDIS_MAX_ACTIVE = "redis.max.active:10";
     String REDIS_TEST_ONBORROW = "redis.test.onBorrow:true";

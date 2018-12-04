@@ -27,7 +27,7 @@ public class DataCacheFactory {
     public DataCache getDataCache() {
         Properties properties = getApplicationProperties();
 
-        if (Boolean.valueOf(getProperty(properties, DataCacheConstants.REDIS_LB_STICKY_SESSION_ENABLED))) {
+        if (Boolean.valueOf(getProperty(properties, DataCacheConstants.LB_STICKY_SESSION_ENABLED))) {
             return new StandardDataCache(properties, this.sessionExpiryTime);
         }
 
