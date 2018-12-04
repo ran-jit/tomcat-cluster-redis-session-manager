@@ -54,7 +54,7 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
 <body>
     <table border="1px" style="width: 80%;margin-left: 10%;margin-right: 10%;line-height: 1.5;">
         <tr><th style="width: 20%;">Property</th><th style="width: 40%;">Description</th><th style="width: 30%;">Value</th></tr>
-        <tr><td>redis.hosts</td><td>Redis server running instance IP address and port number</td><td>default: 127.0.0.1:6379<br>ex: 127.0.0.1:6379, 127.0.0.2:6379, 127.0.0.2:6380, ....</td></tr>
+        <tr><td>redis.hosts</td><td>Redis server running instance IP address and port number<br>ex: 127.0.0.1:6379, 127.0.0.2:6379, 127.0.0.2:6380, ..</td><td>default: 127.0.0.1:6379</td></tr>
         <tr><td>redis.password</td><td>Redis protected password</td><td></td></tr>
         <tr><td>redis.database</td><td>Redis database selection. (Numeric value)</td><td>default: 0</td></tr>
         <tr><td>redis.timeout</td><td>Redis connection timeout</td><td>default: 2000</td></tr>
