@@ -185,7 +185,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     /** {@inheritDoc} */
     @Override
     public void remove(org.apache.catalina.Session session, boolean update) {
-        this.dataCache.expire(session.getId(), 10);
+        this.dataCache.delete(session.getId());
     }
 
     /** {@inheritDoc} */
