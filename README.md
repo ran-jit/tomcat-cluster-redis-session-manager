@@ -1,12 +1,14 @@
 # Tomcat Clustering Redis Session Manager
 
-Redis session manager is pluggable one. It uses to store sessions into Redis for easy distribution of HTTP Requests across a cluster of Tomcat servers. Sessions are implemented as as non-sticky i.e, each request is forwarded to any server in round-robin manner.
+The Redis session manager is pluggable one. It stores session into Redis for easy distribution of HTTP Requests across a cluster of Tomcat servers.
 
-The HTTP Requests session setAttribute(name, value) method stores the session into Redis (session attribute values must be Serializable) immediately and the session getAttribute(name) method request directly from Redis. Also, the inactive sessions has been removed based on the session time-out configuration.
+Here the Sessions are implemented as non-sticky (means, each request can able to go to any server in the cluster, unlike the Apache provided Tomcat clustering setup.)
 
-Supports redis default, sentinel and cluster mode, based on the configuration.
+Request Sessions will be stored into Redis immediately (Session attributes must be Serializable), for the use of other servers. When tomcat receives a request from the client, Sessions are loaded directly from Redis.
 
-Going forward, we no need to enable sticky session (JSESSIONID) in Load balancer.
+Supports Redis default, sentinel and cluster mode, based on the configuration.
+
+Going forward, we no need to enable sticky session (JSESSIONID) in Load Balancer.
 
 ## Supports:
    - Apache Tomcat 7
@@ -26,28 +28,27 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
     
 
 #### Steps to be done,
-1. Move the downloaded jars to tomcat/lib directory
+1. Copy the downloaded jars to your tomcat/lib directory.
 	- **tomcat/lib/**
 	
-2. Add tomcat system property "catalina.base"
+2. Add tomcat system property "catalina.base".
 	- **catalina.base="TOMCAT_LOCATION"**
 	     * example: export catalina.base=/opt/tomcat
 
-3. Extract downloaded package (tomcat-cluster-redis-session-manager.zip) to configure Redis credentials in redis-data-cache.properties file and move the file to tomcat/conf directory
+3. Copy the redis-data-cache.properties file to your tomcat/conf directory and update your Redis server details.
 	- **tomcat/conf/redis-data-cache.properties**
 
-4. Add the below two lines in tomcat/conf/context.xml
+4. Add the below two lines in your tomcat/conf/context.xml file.
 	- **&#60;Valve className="tomcat.request.session.redis.SessionHandlerValve" &#47;&#62;**
 	- **&#60;Manager className="tomcat.request.session.redis.SessionManager" &#47;&#62;**
 
-5. Verify the session expiration time in tomcat/conf/web.xml
+5. Verify the session expiration time in tomcat/conf/web.xml file.
 	- **&#60;session-config&#62;**
 	- 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **&#60;session-timeout&#62;60&#60;&#47;session-timeout&#62;**
 	- **&#60;&#47;session-config&#62;**
 
 ### Note:
   - **All your session attribute values must implement java.io.Serializable.**
-  - Supports redis default, sentinel and cluster mode, based on the redis-data-cache.properties configuration.
 
 ### Configuration Properties:
 <html>
