@@ -1,7 +1,7 @@
 package tomcat.request.session.data.cache.impl.redis;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.util.Pool;
@@ -12,7 +12,7 @@ import tomcat.request.session.data.cache.DataCacheConstants;
 abstract class RedisManager implements DataCache {
 
     private static final int NUM_RETRIES = 3;
-    private static final Log LOGGER = LogFactory.getLog(RedisManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisManager.class);
 
     private final Pool<Jedis> pool;
     private final long failiureWaitTime;

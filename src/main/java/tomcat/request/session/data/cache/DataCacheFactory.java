@@ -1,7 +1,7 @@
 package tomcat.request.session.data.cache;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tomcat.request.session.SessionConstants;
 import tomcat.request.session.data.cache.impl.StandardDataCache;
 import tomcat.request.session.data.cache.impl.redis.RedisCache;
@@ -15,7 +15,7 @@ import java.util.Properties;
 /** author: Ranjith Manickam @ 3 Dec' 2018 */
 public class DataCacheFactory {
 
-    private static final Log LOGGER = LogFactory.getLog(DataCacheFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataCacheFactory.class);
 
     private final int sessionExpiryTime;
 

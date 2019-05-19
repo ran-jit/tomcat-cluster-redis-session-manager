@@ -1,7 +1,7 @@
 package tomcat.request.session.data.cache.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tomcat.request.session.data.cache.DataCache;
 import tomcat.request.session.data.cache.DataCacheConstants;
 import tomcat.request.session.data.cache.DataCacheFactory;
@@ -159,7 +159,7 @@ public class StandardDataCache extends RedisCache {
     /** Session data redis sync thread. */
     private class SessionDataSyncThread implements Runnable {
 
-        private final Log LOGGER = LogFactory.getLog(SessionDataSyncThread.class);
+        private final Logger LOGGER = LoggerFactory.getLogger(SessionDataSyncThread.class);
 
         private final DataCache dataCache;
         private final int sessionExpiryTime;
@@ -192,7 +192,7 @@ public class StandardDataCache extends RedisCache {
     /** Session data expiry thread. This will takes care of the session expired data removal. */
     private class SessionDataExpiryThread implements Runnable {
 
-        private final Log LOGGER = LogFactory.getLog(SessionDataExpiryThread.class);
+        private final Logger LOGGER = LoggerFactory.getLogger(SessionDataExpiryThread.class);
 
         private final long expiry;
         private final Map<String, SessionData> sessionData;

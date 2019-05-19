@@ -3,8 +3,8 @@ package tomcat.request.session.redis;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tomcat.request.session.exception.BackendException;
 
 import javax.servlet.ServletException;
@@ -13,7 +13,7 @@ import java.io.IOException;
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
 public class SessionHandlerValve extends ValveBase {
 
-    private static final Log LOGGER = LogFactory.getLog(SessionHandlerValve.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionHandlerValve.class);
 
     private SessionManager manager;
 

@@ -7,8 +7,8 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Valve;
 import org.apache.catalina.session.ManagerBase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tomcat.request.session.SerializationUtil;
 import tomcat.request.session.Session;
 import tomcat.request.session.SessionConstants;
@@ -33,7 +33,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     private ThreadLocal<SessionContext> sessionContext = new ThreadLocal<>();
     private Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
 
-    private static final Log LOGGER = LogFactory.getLog(SessionManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionManager.class);
 
     public boolean getSaveOnChange() {
         return this.sessionPolicy.contains(SessionPolicy.SAVE_ON_CHANGE);

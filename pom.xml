@@ -4,7 +4,7 @@
 
     <groupId>tomcat-cluster-redis-session-manager</groupId>
     <artifactId>tomcat-cluster-redis-session-manager</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.2</version>
     <packaging>jar</packaging>
 
     <name>tomcat-cluster-redis-session-manager</name>
@@ -17,7 +17,7 @@
 
         <jedis.version>3.0.1</jedis.version>
         <commons-pool2.version>2.6.2</commons-pool2.version>
-        <commons-logging.version>1.2</commons-logging.version>
+        <slf4j-api.version>1.7.26</slf4j-api.version>
 
         <maven-compiler.version>3.6.1</maven-compiler.version>
         <source-java.version>1.7</source-java.version>
@@ -42,9 +42,9 @@
             <version>${commons-pool2.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>${commons-logging.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
         </dependency>
 
         <!-- For local development dependency begins.. -->
