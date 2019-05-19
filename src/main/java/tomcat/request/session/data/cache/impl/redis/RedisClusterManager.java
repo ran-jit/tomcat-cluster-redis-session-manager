@@ -4,8 +4,8 @@ import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
-import redis.clients.jedis.exceptions.JedisClusterMaxRedirectionsException;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisRedirectionException;
 
 import java.util.Set;
 
@@ -37,7 +37,7 @@ class RedisClusterManager extends RedisManager {
             try {
                 retVal = this.cluster.set(key.getBytes(), value);
                 retry = false;
-            } catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
+            } catch (JedisRedirectionException | JedisConnectionException ex) {
                 handleException(tries, ex);
             }
         } while (retry && tries <= NUM_RETRIES);
@@ -55,7 +55,7 @@ class RedisClusterManager extends RedisManager {
             try {
                 retVal = this.cluster.setnx(key.getBytes(), value);
                 retry = false;
-            } catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
+            } catch (JedisRedirectionException | JedisConnectionException ex) {
                 handleException(tries, ex);
             }
         } while (retry && tries <= NUM_RETRIES);
@@ -73,7 +73,7 @@ class RedisClusterManager extends RedisManager {
             try {
                 retVal = this.cluster.expire(key, seconds);
                 retry = false;
-            } catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
+            } catch (JedisRedirectionException | JedisConnectionException ex) {
                 handleException(tries, ex);
             }
         } while (retry && tries <= NUM_RETRIES);
@@ -91,7 +91,7 @@ class RedisClusterManager extends RedisManager {
             try {
                 retVal = this.cluster.get(key.getBytes());
                 retry = false;
-            } catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
+            } catch (JedisRedirectionException | JedisConnectionException ex) {
                 handleException(tries, ex);
             }
         } while (retry && tries <= NUM_RETRIES);
@@ -109,7 +109,7 @@ class RedisClusterManager extends RedisManager {
             try {
                 retVal = this.cluster.del(key);
                 retry = false;
-            } catch (JedisClusterMaxRedirectionsException | JedisConnectionException ex) {
+            } catch (JedisRedirectionException | JedisConnectionException ex) {
                 handleException(tries, ex);
             }
         } while (retry && tries <= NUM_RETRIES);

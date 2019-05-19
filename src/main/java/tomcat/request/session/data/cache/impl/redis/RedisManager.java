@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import redis.clients.util.Pool;
+import redis.clients.jedis.util.Pool;
 import tomcat.request.session.data.cache.DataCache;
 import tomcat.request.session.data.cache.DataCacheConstants;
 
