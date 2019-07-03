@@ -19,6 +19,10 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load Balancer
    - [latest version (3.0.2)](https://github.com/ran-jit/tomcat-cluster-redis-session-manager/releases/tag/3.0.2)
    - [older versions](https://github.com/ran-jit/tomcat-cluster-redis-session-manager/wiki)
 
+<p align="center">
+	<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6M9A39423UMYS&source=https://github.com/ran-jit/tomcat-cluster-redis-session-manager" target="_blank"><img alt="Donate" height="20%" width="20%" src="https://github.com/ran-jit/tomcat-cluster-redis-session-manager/blob/master/src/main/resources/donate.png"></a>
+</p>
+
 #### Pre-requisite:
 1. jedis.jar
 2. commons-pool2.jar
