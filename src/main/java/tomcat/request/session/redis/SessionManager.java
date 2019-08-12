@@ -16,27 +16,35 @@ import tomcat.request.session.SessionConstants.SessionPolicy;
 import tomcat.request.session.SessionContext;
 import tomcat.request.session.SessionMetadata;
 import tomcat.request.session.data.cache.DataCache;
+import tomcat.request.session.data.cache.DataCacheConstants;
 import tomcat.request.session.data.cache.DataCacheFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Properties;
 import java.util.Set;
 
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
 public class SessionManager extends ManagerBase implements Lifecycle {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionManager.class);
+
     private DataCache dataCache;
     private SerializationUtil serializer;
-
     private ThreadLocal<SessionContext> sessionContext = new ThreadLocal<>();
     private Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SessionManager.class);
-
     public boolean getSaveOnChange() {
         return this.sessionPolicy.contains(SessionPolicy.SAVE_ON_CHANGE);
+    }
+
+    private boolean getAlwaysSaveAfterRequest() {
+        return this.sessionPolicy.contains(SessionPolicy.ALWAYS_SAVE_AFTER_REQUEST);
     }
 
     /** {@inheritDoc} */
@@ -203,11 +211,15 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     /** To initialize the session manager. */
     private void initialize() {
         try {
-            this.dataCache = new DataCacheFactory(getSessionTimeout(null)).getDataCache();
+            Properties properties = getApplicationProperties();
+            this.dataCache = new DataCacheFactory(properties, getSessionTimeout(null)).getDataCache();
             this.serializer = new SerializationUtil();
+
             Context context = getContextIns();
             ClassLoader loader = (context != null && context.getLoader() != null) ? context.getLoader().getClassLoader() : null;
             this.serializer.setClassLoader(loader);
+
+            setSessionPersistentPolicies(properties);
         } catch (Exception ex) {
             LOGGER.error("Error occurred while initializing the session manager..", ex);
             throw ex;
@@ -252,7 +264,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
             session = (this.sessionContext.get() != null) ? this.sessionContext.get().getSession() : null;
             if (session != null) {
                 if (session.isValid()) {
-                    save(session, this.sessionPolicy.contains(SessionPolicy.ALWAYS_SAVE_AFTER_REQUEST));
+                    save(session, getAlwaysSaveAfterRequest());
                 } else {
                     remove(session);
                 }
@@ -270,7 +282,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     private int getSessionTimeout(Session session) {
         int timeout = getContextIns().getSessionTimeout() * 60;
         int sessionTimeout = (session == null) ? 0 : session.getMaxInactiveInterval();
-        return (sessionTimeout < timeout) ? ((timeout < 1800) ? 1800 : timeout) : sessionTimeout;
+        return (sessionTimeout < timeout) ? (Math.max(timeout, 1800)) : sessionTimeout;
     }
 
     /** To set values to session context. */
@@ -311,5 +323,46 @@ public class SessionManager extends ManagerBase implements Lifecycle {
             }
         }
         throw new RuntimeException("Error occurred while creating container instance");
+    }
+
+    /** To set session persistent policies */
+    private void setSessionPersistentPolicies(Properties properties) {
+        String sessionPolicies = properties.getProperty(SessionConstants.SESSION_PERSISTENT_POLICIES);
+        if (sessionPolicies == null || sessionPolicies.isEmpty()) {
+            return;
+        }
+
+        sessionPolicies = sessionPolicies.replaceAll("\\s", "");
+        String[] sessionPolicyNames = sessionPolicies.split(",");
+        for (String sessionPolicyName : sessionPolicyNames) {
+            this.sessionPolicy.add(SessionPolicy.fromName(sessionPolicyName));
+        }
+    }
+
+    /** To get redis data cache properties. */
+    private Properties getApplicationProperties() {
+        Properties properties = new Properties();
+        try {
+            String filePath = System.getProperty(SessionConstants.CATALINA_BASE).concat(File.separator)
+                    .concat(SessionConstants.CONF).concat(File.separator)
+                    .concat(DataCacheConstants.APPLICATION_PROPERTIES_FILE);
+
+            InputStream resourceStream = null;
+            try {
+                resourceStream = (!filePath.isEmpty() && new File(filePath).exists()) ? new FileInputStream(filePath) : null;
+                if (resourceStream == null) {
+                    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                    resourceStream = loader.getResourceAsStream(DataCacheConstants.APPLICATION_PROPERTIES_FILE);
+                }
+                properties.load(resourceStream);
+            } finally {
+                if (resourceStream != null) {
+                    resourceStream.close();
+                }
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Error while retrieving application properties", ex);
+        }
+        return properties;
     }
 }

@@ -56,9 +56,9 @@ public class RedisCache implements DataCache {
 
     private void initialize(Properties properties) {
         RedisConfigType configType;
-        if (Boolean.valueOf(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_CLUSTER_ENABLED))) {
+        if (Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_CLUSTER_ENABLED))) {
             configType = RedisConfigType.CLUSTER;
-        } else if (Boolean.valueOf(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_SENTINEL_ENABLED))) {
+        } else if (Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_SENTINEL_ENABLED))) {
             configType = RedisConfigType.SENTINEL;
         } else {
             configType = RedisConfigType.DEFAULT;
@@ -73,7 +73,7 @@ public class RedisCache implements DataCache {
         int database = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_DATABASE));
 
         int timeout = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TIMEOUT));
-        timeout = (timeout < Protocol.DEFAULT_TIMEOUT) ? Protocol.DEFAULT_TIMEOUT : timeout;
+        timeout = Math.max(timeout, Protocol.DEFAULT_TIMEOUT);
 
         JedisPoolConfig poolConfig = getPoolConfig(properties);
         switch (configType) {
@@ -107,7 +107,7 @@ public class RedisCache implements DataCache {
         boolean testOnReturn = Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_ONRETURN));
         poolConfig.setTestOnReturn(testOnReturn);
 
-        int maxIdle = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MAX_ACTIVE));
+        int maxIdle = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MAX_IDLE));
         poolConfig.setMaxIdle(maxIdle);
 
         int minIdle = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MIN_IDLE));
@@ -143,14 +143,14 @@ public class RedisCache implements DataCache {
             switch (configType) {
                 case CLUSTER:
                     nodes = (nodes == null) ? new HashSet<>() : nodes;
-                    nodes.add(new HostAndPort(hostPortArr[0], Integer.valueOf(hostPortArr[1])));
+                    nodes.add(new HostAndPort(hostPortArr[0], Integer.parseInt(hostPortArr[1])));
                     break;
                 case SENTINEL:
                     nodes = (nodes == null) ? new HashSet<>() : nodes;
-                    nodes.add(new HostAndPort(hostPortArr[0], Integer.valueOf(hostPortArr[1])).toString());
+                    nodes.add(new HostAndPort(hostPortArr[0], Integer.parseInt(hostPortArr[1])).toString());
                     break;
                 default:
-                    int port = Integer.valueOf(hostPortArr[1]);
+                    int port = Integer.parseInt(hostPortArr[1]);
                     if (!hostPortArr[0].isEmpty() && port > 0) {
                         List<String> node = new ArrayList<>();
                         node.add(hostPortArr[0]);

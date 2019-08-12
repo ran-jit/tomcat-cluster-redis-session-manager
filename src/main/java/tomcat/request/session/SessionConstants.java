@@ -5,6 +5,7 @@ public interface SessionConstants {
     byte[] NULL_SESSION = "null".getBytes();
     String CATALINA_BASE = "catalina.base";
     String CONF = "conf";
+    String SESSION_PERSISTENT_POLICIES = "session.persistent.policies";
 
     enum SessionPolicy {
         DEFAULT, SAVE_ON_CHANGE, ALWAYS_SAVE_AFTER_REQUEST;

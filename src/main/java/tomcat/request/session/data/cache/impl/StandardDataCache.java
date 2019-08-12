@@ -113,7 +113,7 @@ public class StandardDataCache extends RedisCache {
     }
 
     /** Session data. */
-    private class SessionData implements Serializable {
+    private static class SessionData implements Serializable {
         private byte[] value;
         private long lastAccessedOn;
 
@@ -157,7 +157,7 @@ public class StandardDataCache extends RedisCache {
     }
 
     /** Session data redis sync thread. */
-    private class SessionDataSyncThread implements Runnable {
+    private static class SessionDataSyncThread implements Runnable {
 
         private final Logger LOGGER = LoggerFactory.getLogger(SessionDataSyncThread.class);
 
@@ -190,7 +190,7 @@ public class StandardDataCache extends RedisCache {
     }
 
     /** Session data expiry thread. This will takes care of the session expired data removal. */
-    private class SessionDataExpiryThread implements Runnable {
+    private static class SessionDataExpiryThread implements Runnable {
 
         private final Logger LOGGER = LoggerFactory.getLogger(SessionDataExpiryThread.class);
 
