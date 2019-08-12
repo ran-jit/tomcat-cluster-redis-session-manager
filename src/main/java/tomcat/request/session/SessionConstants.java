@@ -6,6 +6,8 @@ public interface SessionConstants {
     String CATALINA_BASE = "catalina.base";
     String CONF = "conf";
     String SESSION_PERSISTENT_POLICIES = "session.persistent.policies";
+    String SESSION_ID_PREFIX = "session.id.prefix";
+    String EMPTY_STRING = "";
 
     enum SessionPolicy {
         DEFAULT, SAVE_ON_CHANGE, ALWAYS_SAVE_AFTER_REQUEST;

@@ -8,6 +8,8 @@ import redis.clients.jedis.util.Pool;
 import tomcat.request.session.data.cache.DataCache;
 import tomcat.request.session.data.cache.DataCacheConstants;
 
+import java.util.Set;
+
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
 abstract class RedisManager implements DataCache {
 
@@ -104,6 +106,24 @@ abstract class RedisManager implements DataCache {
             tries++;
             try (Jedis jedis = this.pool.getResource()) {
                 retVal = jedis.del(key);
+                retry = false;
+            } catch (JedisConnectionException ex) {
+                handleException(tries, ex);
+            }
+        } while (retry && tries <= NUM_RETRIES);
+        return retVal;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> keys(String pattern) {
+        int tries = 0;
+        boolean retry = true;
+        Set<String> retVal = null;
+        do {
+            tries++;
+            try (Jedis jedis = this.pool.getResource()) {
+                retVal = jedis.keys(pattern);
                 retry = false;
             } catch (JedisConnectionException ex) {
                 handleException(tries, ex);

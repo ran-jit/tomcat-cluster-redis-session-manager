@@ -18,6 +18,7 @@ import tomcat.request.session.SessionMetadata;
 import tomcat.request.session.data.cache.DataCache;
 import tomcat.request.session.data.cache.DataCacheConstants;
 import tomcat.request.session.data.cache.DataCacheFactory;
+import tomcat.request.session.manager.SessionDetailsManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,11 +34,16 @@ import java.util.Set;
 public class SessionManager extends ManagerBase implements Lifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionManager.class);
+    private static SessionDetailsManager sessionDetailsManager;
 
     private DataCache dataCache;
     private SerializationUtil serializer;
     private ThreadLocal<SessionContext> sessionContext = new ThreadLocal<>();
     private Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
+
+    public static SessionDetailsManager getSessionDetailsManagerInstance() {
+        return sessionDetailsManager;
+    }
 
     public boolean getSaveOnChange() {
         return this.sessionPolicy.contains(SessionPolicy.SAVE_ON_CHANGE);
@@ -220,6 +226,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
             this.serializer.setClassLoader(loader);
 
             setSessionPersistentPolicies(properties);
+            sessionDetailsManager = new SessionDetailsManager(this.dataCache, properties.getProperty(SessionConstants.SESSION_ID_PREFIX, SessionConstants.EMPTY_STRING));
         } catch (Exception ex) {
             LOGGER.error("Error occurred while initializing the session manager..", ex);
             throw ex;

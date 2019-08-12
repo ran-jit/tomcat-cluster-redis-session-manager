@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -110,6 +111,21 @@ public class StandardDataCache extends RedisCache {
             this.processDataSync = true;
         }
         return (value == null) ? 0L : 1L;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> keys(String pattern) {
+        handleSessionData();
+        if (this.sessionData.isEmpty()) {
+            try {
+                return super.keys(pattern);
+            } catch (RuntimeException ex) {
+                this.processDataSync = true;
+                throw ex;
+            }
+        }
+        return this.sessionData.keySet();
     }
 
     /** Session data. */

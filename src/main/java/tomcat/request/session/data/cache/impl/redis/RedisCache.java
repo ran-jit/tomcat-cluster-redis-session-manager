@@ -3,6 +3,7 @@ package tomcat.request.session.data.cache.impl.redis;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
+import tomcat.request.session.SessionConstants;
 import tomcat.request.session.data.cache.DataCache;
 import tomcat.request.session.data.cache.DataCacheConstants;
 import tomcat.request.session.data.cache.DataCacheConstants.RedisConfigType;
@@ -19,39 +20,48 @@ import java.util.Set;
 public class RedisCache implements DataCache {
 
     private DataCache dataCache;
+    private final String sessionIdPrefix;
 
     public RedisCache(Properties properties) {
         initialize(properties);
+        String sessionKeyPrefix = properties.getProperty(SessionConstants.SESSION_ID_PREFIX, SessionConstants.EMPTY_STRING);
+        this.sessionIdPrefix = sessionKeyPrefix.equals(SessionConstants.EMPTY_STRING) ? sessionKeyPrefix : sessionKeyPrefix.concat("-");
     }
 
     /** {@inheritDoc} */
     @Override
     public byte[] set(String key, byte[] value) {
-        return dataCache.set(key, value);
+        return this.dataCache.set(this.sessionIdPrefix.concat(key), value);
     }
 
     /** {@inheritDoc} */
     @Override
     public Long setnx(String key, byte[] value) {
-        return dataCache.setnx(key, value);
+        return this.dataCache.setnx(this.sessionIdPrefix.concat(key), value);
     }
 
     /** {@inheritDoc} */
     @Override
     public Long expire(String key, int seconds) {
-        return dataCache.expire(key, seconds);
+        return this.dataCache.expire(this.sessionIdPrefix.concat(key), seconds);
     }
 
     /** {@inheritDoc} */
     @Override
     public byte[] get(String key) {
-        return dataCache.get(key);
+        return this.dataCache.get(this.sessionIdPrefix.concat(key));
     }
 
     /** {@inheritDoc} */
     @Override
     public Long delete(String key) {
-        return dataCache.delete(key);
+        return this.dataCache.delete(this.sessionIdPrefix.concat(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> keys(String pattern) {
+        return this.dataCache.keys(pattern);
     }
 
     private void initialize(Properties properties) {
@@ -78,14 +88,14 @@ public class RedisCache implements DataCache {
         JedisPoolConfig poolConfig = getPoolConfig(properties);
         switch (configType) {
             case CLUSTER:
-                dataCache = new RedisClusterManager((Set<HostAndPort>) nodes, password, timeout, poolConfig);
+                this.dataCache = new RedisClusterManager((Set<HostAndPort>) nodes, password, timeout, poolConfig);
                 break;
             case SENTINEL:
                 String masterName = String.valueOf(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_SENTINEL_MASTER));
-                dataCache = new RedisSentinelManager((Set<String>) nodes, masterName, password, database, timeout, poolConfig);
+                this.dataCache = new RedisSentinelManager((Set<String>) nodes, masterName, password, database, timeout, poolConfig);
                 break;
             default:
-                dataCache = new RedisStandardManager(((List<String>) nodes).get(0), Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout, poolConfig);
+                this.dataCache = new RedisStandardManager(((List<String>) nodes).get(0), Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout, poolConfig);
                 break;
         }
     }

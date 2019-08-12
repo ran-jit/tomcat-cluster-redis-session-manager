@@ -1,5 +1,7 @@
 package tomcat.request.session.data.cache;
 
+import java.util.Set;
+
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
 public interface DataCache {
 
@@ -45,4 +47,12 @@ public interface DataCache {
      * @return - Returns the number of keys that were removed.
      */
     Long delete(String key);
+
+    /**
+     * Returns the keys from data-cache.
+     *
+     * @param pattern - key pattern.
+     * @return - Returns the keys list.
+     */
+    Set<String> keys(String pattern);
 }
