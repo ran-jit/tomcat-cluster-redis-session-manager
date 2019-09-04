@@ -37,7 +37,7 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
 	
 2. Add tomcat system property "catalina.base".
 	- **catalina.base="TOMCAT_LOCATION"**
-	     * example: export catalina.base=/opt/tomcat
+	     * example: env "catalina.base=/opt/tomcat" bash
 
 3. Copy the redis-data-cache.properties file to your tomcat/conf directory and update your Redis server details.
 	- **tomcat/conf/redis-data-cache.properties**
