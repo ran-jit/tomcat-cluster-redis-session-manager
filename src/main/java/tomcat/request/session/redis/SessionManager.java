@@ -9,24 +9,21 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.session.ManagerBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tomcat.request.session.SerializationUtil;
-import tomcat.request.session.Session;
-import tomcat.request.session.SessionConstants;
-import tomcat.request.session.SessionConstants.SessionPolicy;
-import tomcat.request.session.SessionContext;
-import tomcat.request.session.SessionMetadata;
+import tomcat.request.session.constant.SessionConstants;
+import tomcat.request.session.constant.SessionConstants.SessionPolicy;
 import tomcat.request.session.data.cache.DataCache;
-import tomcat.request.session.data.cache.DataCacheConstants;
 import tomcat.request.session.data.cache.DataCacheFactory;
+import tomcat.request.session.model.Config;
+import tomcat.request.session.model.Session;
+import tomcat.request.session.model.SessionContext;
+import tomcat.request.session.model.SessionMetadata;
+import tomcat.request.session.util.ConfigUtil;
+import tomcat.request.session.util.SerializationUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Properties;
 import java.util.Set;
 
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
@@ -211,15 +208,15 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     /** To initialize the session manager. */
     private void initialize() {
         try {
-            Properties properties = getApplicationProperties();
-            this.dataCache = new DataCacheFactory(properties, getSessionTimeout(null)).getDataCache();
+            Config config = ConfigUtil.getConfig();
+            this.dataCache = new DataCacheFactory(config, getSessionTimeout(null)).getDataCache();
             this.serializer = new SerializationUtil();
 
             Context context = getContextIns();
             ClassLoader loader = (context != null && context.getLoader() != null) ? context.getLoader().getClassLoader() : null;
             this.serializer.setClassLoader(loader);
 
-            setSessionPersistentPolicies(properties);
+            setSessionPersistentPolicies(config);
         } catch (Exception ex) {
             LOGGER.error("Error occurred while initializing the session manager..", ex);
             throw ex;
@@ -326,8 +323,8 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     }
 
     /** To set session persistent policies */
-    private void setSessionPersistentPolicies(Properties properties) {
-        String sessionPolicies = properties.getProperty(SessionConstants.SESSION_PERSISTENT_POLICIES);
+    private void setSessionPersistentPolicies(Config config) {
+        String sessionPolicies = config.getSessionPersistentPolicies();
         if (sessionPolicies == null || sessionPolicies.isEmpty()) {
             return;
         }
@@ -337,32 +334,5 @@ public class SessionManager extends ManagerBase implements Lifecycle {
         for (String sessionPolicyName : sessionPolicyNames) {
             this.sessionPolicy.add(SessionPolicy.fromName(sessionPolicyName));
         }
-    }
-
-    /** To get redis data cache properties. */
-    private Properties getApplicationProperties() {
-        Properties properties = new Properties();
-        try {
-            String filePath = System.getProperty(SessionConstants.CATALINA_BASE).concat(File.separator)
-                    .concat(SessionConstants.CONF).concat(File.separator)
-                    .concat(DataCacheConstants.APPLICATION_PROPERTIES_FILE);
-
-            InputStream resourceStream = null;
-            try {
-                resourceStream = (!filePath.isEmpty() && new File(filePath).exists()) ? new FileInputStream(filePath) : null;
-                if (resourceStream == null) {
-                    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                    resourceStream = loader.getResourceAsStream(DataCacheConstants.APPLICATION_PROPERTIES_FILE);
-                }
-                properties.load(resourceStream);
-            } finally {
-                if (resourceStream != null) {
-                    resourceStream.close();
-                }
-            }
-        } catch (IOException ex) {
-            LOGGER.error("Error while retrieving application properties", ex);
-        }
-        return properties;
     }
 }

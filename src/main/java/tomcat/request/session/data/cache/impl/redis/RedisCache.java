@@ -2,17 +2,14 @@ package tomcat.request.session.data.cache.impl.redis;
 
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
 import tomcat.request.session.data.cache.DataCache;
-import tomcat.request.session.data.cache.DataCacheConstants;
-import tomcat.request.session.data.cache.DataCacheConstants.RedisConfigType;
-import tomcat.request.session.data.cache.DataCacheFactory;
+import tomcat.request.session.model.Config;
+import tomcat.request.session.model.Config.RedisConfigType;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
@@ -20,8 +17,8 @@ public class RedisCache implements DataCache {
 
     private DataCache dataCache;
 
-    public RedisCache(Properties properties) {
-        initialize(properties);
+    public RedisCache(Config config) {
+        initialize(config);
     }
 
     /** {@inheritDoc} */
@@ -54,38 +51,31 @@ public class RedisCache implements DataCache {
         return dataCache.delete(key);
     }
 
-    private void initialize(Properties properties) {
-        RedisConfigType configType;
-        if (Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_CLUSTER_ENABLED))) {
-            configType = RedisConfigType.CLUSTER;
-        } else if (Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_SENTINEL_ENABLED))) {
-            configType = RedisConfigType.SENTINEL;
-        } else {
-            configType = RedisConfigType.DEFAULT;
-        }
-
-        String hosts = DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_HOSTS, String.format("%s:%s", Protocol.DEFAULT_HOST, Protocol.DEFAULT_PORT));
-        Collection<?> nodes = getJedisNodes(hosts, configType);
-
-        String password = DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_PASSWORD);
-        password = (password != null && !password.isEmpty()) ? password : null;
-
-        int database = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_DATABASE));
-
-        int timeout = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TIMEOUT));
-        timeout = Math.max(timeout, Protocol.DEFAULT_TIMEOUT);
-
-        JedisPoolConfig poolConfig = getPoolConfig(properties);
-        switch (configType) {
+    private void initialize(Config config) {
+        Collection<?> nodes = getJedisNodes(config.getRedisHosts(), config.getRedisConfigType());
+        JedisPoolConfig poolConfig = getPoolConfig(config);
+        switch (config.getRedisConfigType()) {
             case CLUSTER:
-                dataCache = new RedisClusterManager((Set<HostAndPort>) nodes, password, timeout, poolConfig);
+                this.dataCache = new RedisClusterManager((Set<HostAndPort>) nodes,
+                        config.getRedisPassword(),
+                        config.getRedisTimeout(),
+                        poolConfig);
                 break;
             case SENTINEL:
-                String masterName = String.valueOf(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_SENTINEL_MASTER));
-                dataCache = new RedisSentinelManager((Set<String>) nodes, masterName, password, database, timeout, poolConfig);
+                this.dataCache = new RedisSentinelManager((Set<String>) nodes,
+                        config.getRedisSentinelMaster(),
+                        config.getRedisPassword(),
+                        config.getRedisDatabase(),
+                        config.getRedisTimeout(),
+                        poolConfig);
                 break;
             default:
-                dataCache = new RedisStandardManager(((List<String>) nodes).get(0), Integer.parseInt(((List<String>) nodes).get(1)), password, database, timeout, poolConfig);
+                this.dataCache = new RedisStandardManager(((List<String>) nodes).get(0),
+                        Integer.parseInt(((List<String>) nodes).get(1)),
+                        config.getRedisPassword(),
+                        config.getRedisDatabase(),
+                        config.getRedisTimeout(),
+                        poolConfig);
                 break;
         }
     }
@@ -93,34 +83,19 @@ public class RedisCache implements DataCache {
     /**
      * To get redis pool config.
      *
-     * @param properties - Redis data cache properties.
+     * @param config - Application config.
      * @return - Returns the redis pool config.
      */
-    private JedisPoolConfig getPoolConfig(Properties properties) {
+    private JedisPoolConfig getPoolConfig(Config config) {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
-        int maxActive = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MAX_ACTIVE));
-        poolConfig.setMaxTotal(maxActive);
-
-        boolean testOnBorrow = Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_ONBORROW));
-        poolConfig.setTestOnBorrow(testOnBorrow);
-
-        boolean testOnReturn = Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_ONRETURN));
-        poolConfig.setTestOnReturn(testOnReturn);
-
-        int maxIdle = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MAX_IDLE));
-        poolConfig.setMaxIdle(maxIdle);
-
-        int minIdle = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_MIN_IDLE));
-        poolConfig.setMinIdle(minIdle);
-
-        boolean testWhileIdle = Boolean.parseBoolean(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_WHILEIDLE));
-        poolConfig.setTestWhileIdle(testWhileIdle);
-
-        int testNumPerEviction = Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TEST_NUMPEREVICTION));
-        poolConfig.setNumTestsPerEvictionRun(testNumPerEviction);
-
-        long timeBetweenEviction = Long.parseLong(DataCacheFactory.getProperty(properties, DataCacheConstants.REDIS_TIME_BETWEENEVICTION));
-        poolConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEviction);
+        poolConfig.setMaxTotal(config.getRedisMaxActive());
+        poolConfig.setTestOnBorrow(config.getRedisTestOnBorrow());
+        poolConfig.setTestOnReturn(config.getRedisTestOnReturn());
+        poolConfig.setMaxIdle(config.getRedisMaxIdle());
+        poolConfig.setMinIdle(config.getRedisMinIdle());
+        poolConfig.setTestWhileIdle(config.getRedisTestWhileIdle());
+        poolConfig.setNumTestsPerEvictionRun(config.getRedisTestNumPerEviction());
+        poolConfig.setTimeBetweenEvictionRunsMillis(config.getRedisTimeBetweenEviction());
         return poolConfig;
     }
 

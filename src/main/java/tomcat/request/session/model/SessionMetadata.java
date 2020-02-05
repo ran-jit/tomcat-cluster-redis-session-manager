@@ -1,4 +1,4 @@
-package tomcat.request.session;
+package tomcat.request.session.model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

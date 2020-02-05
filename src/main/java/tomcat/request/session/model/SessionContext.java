@@ -1,4 +1,4 @@
-package tomcat.request.session;
+package tomcat.request.session.model;
 
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
 public class SessionContext {

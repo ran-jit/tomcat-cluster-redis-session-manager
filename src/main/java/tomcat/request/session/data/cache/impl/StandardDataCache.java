@@ -3,14 +3,12 @@ package tomcat.request.session.data.cache.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tomcat.request.session.data.cache.DataCache;
-import tomcat.request.session.data.cache.DataCacheConstants;
-import tomcat.request.session.data.cache.DataCacheFactory;
 import tomcat.request.session.data.cache.impl.redis.RedisCache;
+import tomcat.request.session.model.Config;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -32,15 +30,15 @@ public class StandardDataCache extends RedisCache {
     private final Executor expiryJobExecutor;
     private final Executor dataSyncJobExecutor;
 
-    public StandardDataCache(Properties properties, int sessionExpiryTime) {
-        super(properties);
+    public StandardDataCache(Config config, int sessionExpiryTime) {
+        super(config);
         this.sessionExpiryTime = sessionExpiryTime;
         this.sessionData = new ConcurrentHashMap<>();
         this.expiryJob = new Date().getTime();
         this.dataSyncJob = new Date().getTime();
         this.processDataSync = false;
-        this.expiryJobTriggerInterval = TimeUnit.MINUTES.toMillis(Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.SESSION_EXPIRY_JOB_INTERVAL)));
-        this.dataSyncJobTriggerInterval = TimeUnit.MINUTES.toMillis(Integer.parseInt(DataCacheFactory.getProperty(properties, DataCacheConstants.SESSION_DATA_SYNC_JOB_INTERVAL)));
+        this.expiryJobTriggerInterval = TimeUnit.MINUTES.toMillis(config.getRedisSessionExpiryJobInterval());
+        this.dataSyncJobTriggerInterval = TimeUnit.MINUTES.toMillis(config.getRedisSessionDataSyncJobInterval());
         this.expiryJobExecutor = Executors.newSingleThreadExecutor();
         this.dataSyncJobExecutor = Executors.newSingleThreadExecutor();
     }

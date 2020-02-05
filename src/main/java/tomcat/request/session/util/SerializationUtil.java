@@ -1,6 +1,8 @@
-package tomcat.request.session;
+package tomcat.request.session.util;
 
 import org.apache.catalina.util.CustomObjectInputStream;
+import tomcat.request.session.model.Session;
+import tomcat.request.session.model.SessionMetadata;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

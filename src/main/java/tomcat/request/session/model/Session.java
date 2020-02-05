@@ -1,4 +1,8 @@
-package tomcat.request.session;
+package tomcat.request.session.model;
+
+import org.apache.catalina.Manager;
+import org.apache.catalina.session.StandardSession;
+import tomcat.request.session.redis.SessionManager;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -7,11 +11,6 @@ import java.security.Principal;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.catalina.Manager;
-import org.apache.catalina.session.StandardSession;
-
-import tomcat.request.session.redis.SessionManager;
 
 /** author: Ranjith Manickam @ 12 Jul' 2018 */
 public class Session extends StandardSession {

@@ -8,7 +8,7 @@ import java.util.Set;
 /** author: Ranjith Manickam @ 3 Dec' 2018 */
 class RedisSentinelManager extends RedisManager {
 
-    private static final long FAILIURE_WAIT_TIME = 2000L;
+    private static final long FAILURE_WAIT_TIME = 2000L;
 
     RedisSentinelManager(Set<String> nodes,
                          String masterName,
@@ -16,6 +16,6 @@ class RedisSentinelManager extends RedisManager {
                          int database,
                          int timeout,
                          JedisPoolConfig poolConfig) {
-        super(new JedisSentinelPool(masterName, nodes, poolConfig, timeout, password, database), FAILIURE_WAIT_TIME);
+        super(new JedisSentinelPool(masterName, nodes, poolConfig, timeout, password, database), FAILURE_WAIT_TIME);
     }
 }

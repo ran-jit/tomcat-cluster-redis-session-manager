@@ -15,15 +15,15 @@ class RedisClusterManager extends RedisManager {
     private final JedisCluster cluster;
 
     private static final int NUM_RETRIES = 30;
-    private static final int DEFAULT_MAX_REDIRECTIONS = 5;
-    private static final long FAILIURE_WAIT_TIME = 4000L;
+    private static final int DEFAULT_MAX_RE_DIRECTIONS = 5;
+    private static final long FAILURE_WAIT_TIME = 4000L;
 
     RedisClusterManager(Set<HostAndPort> nodes,
                         String password,
                         int timeout,
                         JedisPoolConfig poolConfig) {
-        super(null, FAILIURE_WAIT_TIME);
-        this.cluster = new JedisCluster(nodes, timeout, Protocol.DEFAULT_TIMEOUT, DEFAULT_MAX_REDIRECTIONS, password, poolConfig);
+        super(null, FAILURE_WAIT_TIME);
+        this.cluster = new JedisCluster(nodes, timeout, Protocol.DEFAULT_TIMEOUT, DEFAULT_MAX_RE_DIRECTIONS, password, poolConfig);
     }
 
     /** {@inheritDoc} */
