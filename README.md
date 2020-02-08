@@ -71,3 +71,39 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
     </table>
 </body>
 </html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>
+            $( document ).ready(function() {
+                $.ajax({ 
+                    type: "GET",
+                    dataType: "jsonp",
+                    url: "https://api.github.com/repos/ran-jit/tomcat-cluster-redis-session-manager/releases",
+                    success: function(data){
+
+                        
+
+                        var content = "<table border='1px' style='width: 80%;margin-left: 10%;margin-right: 10%;line-height: 1.5;'><tr><th style='width: 30%;'>tag name</th><th style='width: 50%;'>download count</th></tr>";
+
+                        for(var i=0; i< data.data.length; i++) {
+                            var tag = data.data[i];
+                            var downloadCount = 0;
+
+                            for(var j=0; j< tag.assets.length; j++) {
+                                var asset = tag.assets[j];
+                                if(downloadCount < asset.download_count) {
+                                    downloadCount = asset.download_count;
+                                }
+                            }
+
+                            content = content + "<tr><td style='width:20%; text-align:center;'>";
+                            content = content + tag.tag_name + "</td><td style='width:30%; text-align:center;'>";
+                            content = content + downloadCount + "</td></tr>";
+                        }
+
+                        content = content + "</table>";
+                        document.getElementById("download_summary").innerHTML=content;
+                    }
+                });
+            });
+        </script>
