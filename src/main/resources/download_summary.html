@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="download_summary"></div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>
+            $( document ).ready(function() {
+                $.ajax({ 
+                    type: "GET",
+                    dataType: "jsonp",
+                    url: "https://api.github.com/repos/ran-jit/tomcat-cluster-redis-session-manager/releases",
+                    success: function(data){
+                        var content = "<table border='1px' style='width: 80%;margin-left: 10%;margin-right: 10%;line-height: 1.5;'><tr><th style='width: 30%;'>tag</th><th>asset name & download count</th></tr>";
+                        for(var i=0; i< data.data.length; i++) {
+                            var tag = data.data[i];
+                            var downloadCount = 0;
+                            
+                            for(var j=0; j< tag.assets.length; j++) {
+                                var asset = tag.assets[j];
+
+                                content = content + "<tr><td style='width: 10%;'>"+ tag.tag_name + "</td>";    
+                                content = content + "<td>" + asset.name + "<div style='text-align:right;'>" + asset.download_count + "</div></td></tr>";
+                            }
+                        }
+                        content = content + "</table>";
+                        document.getElementById("download_summary").innerHTML=content;
+                    }
+                });
+            });
+        </script>
+
+        
+        </table>
+        
+    </body>
+</html>
