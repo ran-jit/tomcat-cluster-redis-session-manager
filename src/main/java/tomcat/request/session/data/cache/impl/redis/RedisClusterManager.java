@@ -115,4 +115,22 @@ class RedisClusterManager extends RedisManager {
         } while (retry && tries <= NUM_RETRIES);
         return retVal;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public Boolean exists(String key) {
+        int tries = 0;
+        boolean retry = true;
+        Boolean retVal = null;
+        do {
+            tries++;
+            try {
+                retVal = this.cluster.exists(key);
+                retry = false;
+            } catch (JedisRedirectionException | JedisConnectionException ex) {
+                handleException(tries, ex);
+            }
+        } while (retry && tries <= NUM_RETRIES);
+        return retVal;
+    }
 }

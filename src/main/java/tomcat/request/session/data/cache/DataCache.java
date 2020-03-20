@@ -45,4 +45,12 @@ public interface DataCache {
      * @return - Returns the number of keys that were removed.
      */
     Long delete(String key);
+
+    /**
+     * Check the key exists in data-cache.
+     *
+     * @param key - key with which the specified value is to be associated.
+     * @return - Returns true, if the key exists.
+     */
+    Boolean exists(String key);
 }
