@@ -17,6 +17,7 @@ import tomcat.request.session.model.Config;
 import tomcat.request.session.model.Session;
 import tomcat.request.session.model.SessionContext;
 import tomcat.request.session.model.SessionMetadata;
+import tomcat.request.session.model.SingleSignOnEntry;
 import tomcat.request.session.util.ConfigUtil;
 import tomcat.request.session.util.SerializationUtil;
 
@@ -74,6 +75,14 @@ public class SessionManager extends ManagerBase implements Lifecycle {
             if (valve instanceof SessionHandlerValve) {
                 SessionHandlerValve handlerValve = (SessionHandlerValve) valve;
                 handlerValve.setSessionManager(this);
+                initializedValve = true;
+                break;
+            }
+
+            if (valve instanceof SingleSignOnValve) {
+                SingleSignOnValve ssoValve = (SingleSignOnValve) valve;
+                ssoValve.setSessionManager(this);
+                ssoValve.setContext(context);
                 initializedValve = true;
                 break;
             }
@@ -334,5 +343,42 @@ public class SessionManager extends ManagerBase implements Lifecycle {
         for (String sessionPolicyName : sessionPolicyNames) {
             this.sessionPolicy.add(SessionPolicy.fromName(sessionPolicyName));
         }
+    }
+
+    /** To set single-sign-on entry to cache. */
+    void setSingleSignOnEntry(String ssoId, SingleSignOnEntry entry) {
+        if (entry == null) {
+            return;
+        }
+        try {
+            byte[] data = this.serializer.serializeSingleSignOnEntry(entry);
+            this.dataCache.set(ssoId, data);
+        } catch (IOException ex) {
+            LOGGER.error("Error occurred while serializing the single-sign-on entry..", ex);
+        }
+    }
+
+    /** To get single-sign-on entry from cache. */
+    SingleSignOnEntry getSingleSignOnEntry(String ssoId) {
+        byte[] data = this.dataCache.get(ssoId);
+        SingleSignOnEntry entry = new SingleSignOnEntry();
+
+        try {
+            this.serializer.deserializeSingleSignOnEntry(data, entry);
+        } catch (IOException | ClassNotFoundException ex) {
+            LOGGER.error("Error occurred while de-serializing the single-sign-on entry..", ex);
+            return null;
+        }
+        return entry;
+    }
+
+    /** To check single-sign-on entry exists from cache. */
+    Boolean singleSignOnEntryExists(String ssoId) {
+        return this.dataCache.exists(ssoId);
+    }
+
+    /** To delete single-sign-on entry from cache. */
+    void deleteSingleSignOnEntry(String ssoId) {
+        this.dataCache.delete(ssoId);
     }
 }

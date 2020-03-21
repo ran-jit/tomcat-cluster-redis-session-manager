@@ -24,31 +24,37 @@ public class RedisCache implements DataCache {
     /** {@inheritDoc} */
     @Override
     public byte[] set(String key, byte[] value) {
-        return dataCache.set(key, value);
+        return this.dataCache.set(key, value);
     }
 
     /** {@inheritDoc} */
     @Override
     public Long setnx(String key, byte[] value) {
-        return dataCache.setnx(key, value);
+        return this.dataCache.setnx(key, value);
     }
 
     /** {@inheritDoc} */
     @Override
     public Long expire(String key, int seconds) {
-        return dataCache.expire(key, seconds);
+        return this.dataCache.expire(key, seconds);
     }
 
     /** {@inheritDoc} */
     @Override
     public byte[] get(String key) {
-        return dataCache.get(key);
+        return this.dataCache.get(key);
     }
 
     /** {@inheritDoc} */
     @Override
     public Long delete(String key) {
-        return dataCache.delete(key);
+        return this.dataCache.delete(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Boolean exists(String key) {
+        return this.dataCache.exists(key);
     }
 
     private void initialize(Config config) {

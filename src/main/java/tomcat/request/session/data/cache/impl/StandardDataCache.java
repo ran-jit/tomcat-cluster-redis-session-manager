@@ -110,6 +110,12 @@ public class StandardDataCache extends RedisCache {
         return (value == null) ? 0L : 1L;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Boolean exists(String key) {
+        return this.sessionData.containsKey(key);
+    }
+
     /** Session data. */
     private static class SessionData implements Serializable {
         private byte[] value;

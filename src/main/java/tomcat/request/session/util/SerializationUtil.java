@@ -3,6 +3,7 @@ package tomcat.request.session.util;
 import org.apache.catalina.util.CustomObjectInputStream;
 import tomcat.request.session.model.Session;
 import tomcat.request.session.model.SessionMetadata;
+import tomcat.request.session.model.SingleSignOnEntry;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -74,6 +75,27 @@ public class SerializationUtil {
             SessionMetadata serializedMetadata = (SessionMetadata) ois.readObject();
             metadata.copyFieldsFrom(serializedMetadata);
             session.readObjectData(ois);
+        }
+    }
+
+    /** To serialize single-sign-on entry. */
+    public byte[] serializeSingleSignOnEntry(SingleSignOnEntry entry) throws IOException {
+        byte[] serialized;
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(bos))) {
+            entry.writeObjectData(oos);
+            oos.flush();
+            serialized = bos.toByteArray();
+        }
+        return serialized;
+    }
+
+    /** To de-serialize single-sign-on entry. */
+    public void deserializeSingleSignOnEntry(byte[] data, SingleSignOnEntry entry)
+            throws IOException, ClassNotFoundException {
+        try (BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(data));
+             ObjectInputStream ois = new CustomObjectInputStream(bis, this.loader)) {
+            entry.readObjectData(ois);
         }
     }
 }
