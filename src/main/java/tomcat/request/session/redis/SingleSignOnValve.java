@@ -2,8 +2,7 @@ package tomcat.request.session.redis;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleState;
+import org.apache.catalina.Manager;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
 import org.apache.catalina.authenticator.Constants;
@@ -32,23 +31,11 @@ public class SingleSignOnValve extends SingleSignOn {
 
     /** {@inheritDoc} */
     @Override
-    protected synchronized void startInternal() throws LifecycleException {
-        super.setState(LifecycleState.STARTING);
-        super.startInternal();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected synchronized void stopInternal() throws LifecycleException {
-        super.setState(LifecycleState.STOPPING);
-        super.stopInternal();
-        this.context = null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void invoke(Request request, Response response) throws BackendException {
         try {
+            this.setContext(request.getContext());
+            this.setSessionManager(request.getContext().getManager());
+
             request.removeNote("org.apache.catalina.request.SSOID");
             LOGGER.debug("singleSignOn.debug.invoke, requestURI: {}", request.getRequestURI());
 
@@ -103,8 +90,6 @@ public class SingleSignOnValve extends SingleSignOn {
         } catch (IOException | ServletException | RuntimeException ex) {
             LOGGER.error("Error processing request", ex);
             throw new BackendException();
-        } finally {
-            this.manager.afterRequest();
         }
     }
 
@@ -224,8 +209,8 @@ public class SingleSignOnValve extends SingleSignOn {
     }
 
     /** To set session manager. */
-    void setSessionManager(SessionManager manager) {
-        this.manager = manager;
+    void setSessionManager(Manager manager) {
+        this.manager = (SessionManager) manager;
     }
 
     /** To set context. */

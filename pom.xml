@@ -32,9 +32,7 @@
         <target-java.version>${source-java.version}</target-java.version>
 
         <!-- For local development properties begins.. -->
-        <!--<tomcat-catalina.version>apache-tomcat-8.5.32</tomcat-catalina.version>-->
-        <!--<tomcat-servlet-api.version>apache-tomcat-8.5.32</tomcat-servlet-api.version>-->
-        <!--<tomcat-api.version>apache-tomcat-8.5.32</tomcat-api.version>-->
+        <tomcat.version>8.5.32</tomcat.version>
         <!-- For local development properties end.. -->
     </properties>
 
@@ -56,21 +54,21 @@
         </dependency>
 
         <!-- For local development dependency begins.. -->
-        <!--<dependency>-->
-            <!--<groupId>apache-tomcat</groupId>-->
-            <!--<artifactId>catalina</artifactId>-->
-            <!--<version>${tomcat-catalina.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>apache-tomcat</groupId>-->
-            <!--<artifactId>servlet-api</artifactId>-->
-            <!--<version>${tomcat-servlet-api.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>apache-tomcat</groupId>-->
-            <!--<artifactId>tomcat-api</artifactId>-->
-            <!--<version>${tomcat-api.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-api</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
         <!-- For local development dependency end.. -->
     </dependencies>
 
