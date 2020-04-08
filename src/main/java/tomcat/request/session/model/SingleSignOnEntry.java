@@ -78,21 +78,23 @@ public class SingleSignOnEntry implements Serializable {
     }
 
     public void writeObjectData(ObjectOutputStream out) throws IOException {
-        ObjectOutputStream outputStream = new ObjectOutputStream(out);
-        if (this.principal instanceof Serializable) {
-            outputStream.writeBoolean(true);
-            outputStream.writeObject(this.principal);
-        } else {
-            outputStream.writeBoolean(false);
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(out)) {
+            if (this.principal instanceof Serializable) {
+                outputStream.writeBoolean(true);
+                outputStream.writeObject(this.principal);
+            } else {
+                outputStream.writeBoolean(false);
+            }
+            outputStream.flush();
         }
-        outputStream.flush();
     }
 
     public void readObjectData(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        ObjectInputStream inputStream = new ObjectInputStream(in);
-        boolean hasPrincipal = inputStream.readBoolean();
-        if (hasPrincipal) {
-            this.principal = (Principal) inputStream.readObject();
+        try (ObjectInputStream inputStream = new ObjectInputStream(in)) {
+            boolean hasPrincipal = inputStream.readBoolean();
+            if (hasPrincipal) {
+                this.principal = (Principal) inputStream.readObject();
+            }
         }
     }
 }
