@@ -361,8 +361,11 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     /** To get single-sign-on entry from cache. */
     SingleSignOnEntry getSingleSignOnEntry(String ssoId) {
         byte[] data = this.dataCache.get(ssoId);
-        SingleSignOnEntry entry = new SingleSignOnEntry();
+        if (data == null) {
+            return null;
+        }
 
+        SingleSignOnEntry entry = new SingleSignOnEntry();
         try {
             this.serializer.deserializeSingleSignOnEntry(data, entry);
         } catch (IOException | ClassNotFoundException ex) {

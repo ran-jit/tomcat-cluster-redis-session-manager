@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentMap;
 /** author: Ranjith Manickam @ 20 Mar' 2020 */
 public class SingleSignOnEntry implements Serializable {
 
+    private static final long serialVersionUID = 4590485271396917062L;
+
     private String authType;
     private String password;
     private Principal principal;
@@ -79,22 +81,20 @@ public class SingleSignOnEntry implements Serializable {
 
     public void writeObjectData(ObjectOutputStream out) throws IOException {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(out)) {
-            if (this.principal instanceof Serializable) {
-                outputStream.writeBoolean(true);
-                outputStream.writeObject(this.principal);
-            } else {
-                outputStream.writeBoolean(false);
-            }
+            outputStream.writeObject(this);
             outputStream.flush();
         }
     }
 
     public void readObjectData(ObjectInputStream in) throws IOException, ClassNotFoundException {
         try (ObjectInputStream inputStream = new ObjectInputStream(in)) {
-            boolean hasPrincipal = inputStream.readBoolean();
-            if (hasPrincipal) {
-                this.principal = (Principal) inputStream.readObject();
-            }
+            SingleSignOnEntry entry = (SingleSignOnEntry) inputStream.readObject();
+            this.authType = entry.authType;
+            this.password = entry.password;
+            this.principal = entry.principal;
+            this.username = entry.username;
+            this.canReauthenticate = entry.canReauthenticate;
+            this.sessionKeys.putAll(entry.sessionKeys);
         }
     }
 }
