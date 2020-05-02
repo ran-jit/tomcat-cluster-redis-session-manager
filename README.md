@@ -67,7 +67,8 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
         <tr><td>redis.sentinel.enabled</td><td>To enable redis sentinel mode<br/>- default: false<br>- supported values: true/false</td></tr>
         <tr><td>redis.sentinel.master</td><td>Redis sentinel master name<br/>- default: mymaster</td></tr>
         <tr><td>lb.sticky-session.enabled</td><td>To enable redis and standard session mode<br><br>If enabled,<ol><li>Must be enabled sticky session in your load balancer configuration. Else this manager may not return the updated session values</li><li>Session values are stored in local jvm and redis</li><li>If redis is down/not responding, requests uses jvm stored session values to process user requests. Redis comes back the values will be synced</li></ol>- default: false</td></tr>
-	<tr><td>session.persistent.policies</td><td>session persistent policies.<br/><br/>- policies - DEFAULT, SAVE_ON_CHANGE, ALWAYS_SAVE_AFTER_REQUEST <br/><ol><li>SAVE_ON_CHANGE: every time session.setAttribute() or session.removeAttribute() is called the session will be saved.</li><li>ALWAYS_SAVE_AFTER_REQUEST: force saving after every request, regardless of whether or not the manager has detected changes to the session.</li></ol>- default: DEFAULT</td></tr>
+	    <tr><td>session.persistent.policies</td><td>session persistent policies.<br/><br/>- policies - DEFAULT, SAVE_ON_CHANGE, ALWAYS_SAVE_AFTER_REQUEST <br/><ol><li>SAVE_ON_CHANGE: every time session.setAttribute() or session.removeAttribute() is called the session will be saved.</li><li>ALWAYS_SAVE_AFTER_REQUEST: force saving after every request, regardless of whether or not the manager has detected changes to the session.</li></ol>- default: DEFAULT</td></tr>
+	    <tr><td>redis.sso.timeout</td><td>single-sign-on session timeout.<br/>- default: 0 ms (-no expiry)</td></tr>
     </table>
 </body>
 </html>
