@@ -2,6 +2,8 @@ package tomcat.request.session.redis;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
+import org.apache.catalina.Engine;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
@@ -26,14 +28,27 @@ public class SingleSignOnValve extends SingleSignOn {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SingleSignOnValve.class);
 
-    private Context context;
+    private Engine engine;
     private SessionManager manager;
+
+    /** {@inheritDoc} */
+    @Override
+    protected synchronized void startInternal() throws LifecycleException {
+        Container c;
+        for (c = this.getContainer(); c != null && !(c instanceof Engine); c = c.getParent()) {
+        }
+
+        if (c instanceof Engine) {
+            this.engine = (Engine) c;
+        }
+
+        super.startInternal();
+    }
 
     /** {@inheritDoc} */
     @Override
     public void invoke(Request request, Response response) throws BackendException {
         try {
-            this.setContext(request.getContext());
             this.setSessionManager(request.getContext().getManager());
 
             request.removeNote("org.apache.catalina.request.SSOID");
@@ -213,17 +228,12 @@ public class SingleSignOnValve extends SingleSignOn {
         this.manager = (SessionManager) manager;
     }
 
-    /** To set context. */
-    void setContext(Context context) {
-        this.context = context;
-    }
-
     /** To expire session. */
     private void expire(SingleSignOnSessionKey key) {
-        if (this.context == null) {
+        if (this.engine == null) {
             LOGGER.warn("singleSignOn.sessionExpire.engineNull, key: {}", key);
         } else {
-            Container host = this.context.findChild(key.getHostName());
+            Container host = this.engine.findChild(key.getHostName());
             if (host == null) {
                 LOGGER.warn("singleSignOn.sessionExpire.hostNotFound, key: {}", key);
             } else {

@@ -11,6 +11,8 @@ import static tomcat.request.session.annotation.Property.PropertyType.INTEGER;
 /** author: Ranjith Manickam @ 5 Feb' 2020 */
 public class Config implements Serializable {
 
+    private static final long serialVersionUID = 3480402257971437776L;
+
     public static final String APPLICATION_PROPERTIES_FILE = "redis-data-cache.properties";
 
     /** Redis config type. */
@@ -77,6 +79,9 @@ public class Config implements Serializable {
     @Property(name = "session.persistent.policies", defaultValue = "DEFAULT")
     private String sessionPersistentPolicies;
 
+    @Property(name = "redis.sso.timeout", type = INTEGER, defaultValue = "0")
+    private Integer redisSSOTimeout;
+
     public Config() {
     }
 
@@ -98,7 +103,8 @@ public class Config implements Serializable {
                   String redisSentinelMaster,
                   Integer redisSessionExpiryJobInterval,
                   Integer redisSessionDataSyncJobInterval,
-                  String sessionPersistentPolicies) {
+                  String sessionPersistentPolicies,
+                  Integer redisSSOTimeout) {
         this.redisHosts = redisHosts;
         this.redisClusterEnabled = redisClusterEnabled;
         this.redisSentinelEnabled = redisSentinelEnabled;
@@ -118,6 +124,7 @@ public class Config implements Serializable {
         this.redisSessionExpiryJobInterval = redisSessionExpiryJobInterval;
         this.redisSessionDataSyncJobInterval = redisSessionDataSyncJobInterval;
         this.sessionPersistentPolicies = sessionPersistentPolicies;
+        this.redisSSOTimeout = redisSSOTimeout;
     }
 
     /** To get 'redis.hosts' value. */
@@ -215,6 +222,11 @@ public class Config implements Serializable {
         return sessionPersistentPolicies;
     }
 
+    /** To get 'redis.sso.timeout' value */
+    public Integer getRedisSSOTimeout() {
+        return redisSSOTimeout;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -238,6 +250,7 @@ public class Config implements Serializable {
                 ", redisSessionExpiryJobInterval=" + redisSessionExpiryJobInterval +
                 ", redisSessionDataSyncJobInterval=" + redisSessionDataSyncJobInterval +
                 ", sessionPersistentPolicies='" + sessionPersistentPolicies + '\'' +
+                ", redisSSOTimeout='" + redisSSOTimeout + '\'' +
                 '}';
     }
 

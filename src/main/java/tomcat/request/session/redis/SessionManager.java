@@ -32,10 +32,11 @@ public class SessionManager extends ManagerBase implements Lifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionManager.class);
 
+    private Integer ssoTimeout;
     private DataCache dataCache;
     private SerializationUtil serializer;
-    private ThreadLocal<SessionContext> sessionContext = new ThreadLocal<>();
-    private Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
+    private final ThreadLocal<SessionContext> sessionContext = new ThreadLocal<>();
+    private final Set<SessionPolicy> sessionPolicy = EnumSet.of(SessionPolicy.DEFAULT);
 
     public boolean getSaveOnChange() {
         return this.sessionPolicy.contains(SessionPolicy.SAVE_ON_CHANGE);
@@ -75,14 +76,6 @@ public class SessionManager extends ManagerBase implements Lifecycle {
             if (valve instanceof SessionHandlerValve) {
                 SessionHandlerValve handlerValve = (SessionHandlerValve) valve;
                 handlerValve.setSessionManager(this);
-                initializedValve = true;
-                break;
-            }
-
-            if (valve instanceof SingleSignOnValve) {
-                SingleSignOnValve ssoValve = (SingleSignOnValve) valve;
-                ssoValve.setSessionManager(this);
-                ssoValve.setContext(context);
                 initializedValve = true;
                 break;
             }
@@ -218,6 +211,7 @@ public class SessionManager extends ManagerBase implements Lifecycle {
     private void initialize() {
         try {
             Config config = ConfigUtil.getConfig();
+            this.ssoTimeout = config.getRedisSSOTimeout();
             this.dataCache = new DataCacheFactory(config, getSessionTimeout(null)).getDataCache();
             this.serializer = new SerializationUtil();
 
@@ -353,6 +347,9 @@ public class SessionManager extends ManagerBase implements Lifecycle {
         try {
             byte[] data = this.serializer.serializeSingleSignOnEntry(entry);
             this.dataCache.set(ssoId, data);
+            if (this.ssoTimeout > 0) {
+                this.dataCache.expire(ssoId, this.ssoTimeout);
+            }
         } catch (IOException ex) {
             LOGGER.error("Error occurred while serializing the single-sign-on entry..", ex);
         }
