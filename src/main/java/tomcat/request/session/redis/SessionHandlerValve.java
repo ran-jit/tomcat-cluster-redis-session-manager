@@ -31,7 +31,9 @@ public class SessionHandlerValve extends ValveBase {
             LOGGER.error("Error processing request", ex);
             throw new BackendException();
         } finally {
-            this.manager.afterRequest();
+            if (this.manager != null) {
+                this.manager.afterRequest();
+            }
         }
     }
 }

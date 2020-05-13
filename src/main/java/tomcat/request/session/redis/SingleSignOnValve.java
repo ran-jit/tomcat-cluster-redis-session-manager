@@ -225,7 +225,9 @@ public class SingleSignOnValve extends SingleSignOn {
 
     /** To set session manager. */
     void setSessionManager(Manager manager) {
-        this.manager = (SessionManager) manager;
+        if (manager != null) {
+            this.manager = (SessionManager) manager;
+        }
     }
 
     /** To expire session. */
