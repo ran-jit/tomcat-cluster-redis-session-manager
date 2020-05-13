@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>tomcat-cluster-redis-session-manager</groupId>
     <artifactId>tomcat-cluster-redis-session-manager</artifactId>
-    <version>3.0.5.2</version>
+    <version>4.0</version>
     <packaging>jar</packaging>
 
     <name>tomcat-cluster-redis-session-manager</name>
