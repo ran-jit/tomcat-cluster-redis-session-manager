@@ -21,7 +21,7 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load Balancer
    - [older versions](https://github.com/ran-jit/tomcat-cluster-redis-session-manager/wiki)
 
 <p align="center">
-	<a href="https://paypal.me/ranmanic1" target="_blank"><img alt="Donate" height="30%" width="30%" src="https://github.com/ran-jit/tomcat-cluster-redis-session-manager/blob/master/src/main/resources/donate.png"></a>
+  <a href="https://www.buymeacoffee.com/ranmanic" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 </p>
 
 #### Pre-requisite:
