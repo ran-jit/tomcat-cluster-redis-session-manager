@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>tomcat-cluster-redis-session-manager</groupId>
-    <artifactId>tomcat-cluster-redis-session-manager</artifactId>
+    <groupId>tomcat-session-manager</groupId>
+    <artifactId>redis</artifactId>
     <version>4.0</version>
     <packaging>jar</packaging>
 
@@ -36,13 +36,13 @@
         <!-- For local development properties end.. -->
     </properties>
 
-    <repositories>
+    <distributionManagement>
         <repository>
             <id>repsy</id>
             <name>tomcat-cluster-redis-session-manager-repo</name>
             <url>https://repo.repsy.io/mvn/ranmanic/tomcat-session-manager</url>
         </repository>
-    </repositories>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
