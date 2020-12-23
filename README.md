@@ -24,6 +24,21 @@ Going forward, we no need to enable sticky session (JSESSIONID) in Load Balancer
   <a href="https://www.buymeacoffee.com/ranmanic" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 </p>
 
+## Maven configuration
+```
+<repository>
+  <id>repsy</id>
+  <name>tomcat-cluster-redis-session-manager-repo</name>
+  <url>https://repo.repsy.io/mvn/ranmanic/tomcat-session-manager</url>
+</repository>
+
+<dependency>
+  <groupId>tomcat-session-manager</groupId>
+  <artifactId>redis</artifactId>
+  <version>4.0</version>
+</dependency>
+```
+
 #### Pre-requisite:
 1. jedis.jar
 2. commons-pool2.jar
@@ -34,23 +49,33 @@ more details.. https://github.com/ran-jit/tomcat-cluster-redis-session-manager/w
 
 #### Steps to be done,
 1. Copy the downloaded jars to your tomcat/lib directory.
-	- **tomcat/lib/**
+```
+tomcat/lib/
+```
 	
 2. Add tomcat system property "catalina.base".
-	- **catalina.base="TOMCAT_LOCATION"**
-	     * example: env "catalina.base=/opt/tomcat" bash
+```
+catalina.base="TOMCAT_LOCATION"
+example: env "catalina.base=/opt/tomcat" bash
+```
 
 3. Copy the redis-data-cache.properties file to your tomcat/conf directory and update your Redis server details.
-	- **tomcat/conf/redis-data-cache.properties**
+```
+tomcat/conf/redis-data-cache.properties
+```
 
 4. Add the below two lines in your tomcat/conf/context.xml file.
-	- **&#60;Valve className="tomcat.request.session.redis.SessionHandlerValve" &#47;&#62;**
-	- **&#60;Manager className="tomcat.request.session.redis.SessionManager" &#47;&#62;**
+```
+<Valve className="tomcat.request.session.redis.SessionHandlerValve" />
+<Manager className="tomcat.request.session.redis.SessionManager" />
+```
 
 5. Verify the session expiration time in tomcat/conf/web.xml file.
-	- **&#60;session-config&#62;**
-	- 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **&#60;session-timeout&#62;60&#60;&#47;session-timeout&#62;**
-	- **&#60;&#47;session-config&#62;**
+```
+<session-config>
+  <session-timeout>60</session-timeout>
+</session-config>
+```
 
 ### Note:
   - **All your session attribute values must implement java.io.Serializable.**
