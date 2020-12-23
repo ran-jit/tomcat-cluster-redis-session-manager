@@ -36,6 +36,14 @@
         <!-- For local development properties end.. -->
     </properties>
 
+    <repositories>
+        <repository>
+            <id>repsy</id>
+            <name>tomcat-cluster-redis-session-manager-repo</name>
+            <url>https://repo.repsy.io/mvn/ranmanic/tomcat-session-manager</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>redis.clients</groupId>
