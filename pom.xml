@@ -32,7 +32,7 @@
         <target-java.version>${source-java.version}</target-java.version>
 
         <!-- For local development properties begins.. -->
-        <tomcat.version>8.5.32</tomcat.version>
+        <tomcat.version>8.5.86</tomcat.version>
         <!-- For local development properties end.. -->
     </properties>
 
